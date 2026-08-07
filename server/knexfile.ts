@@ -1,13 +1,8 @@
 import type { Knex } from "knex";
 
-const config: Knex.Config = {
+const sharedConfig: Omit<Knex.Config, "connection"> = {
     // Tell Knex we are using SQLite
     client: "sqlite3",
-
-    connection: {
-        // This is where the actual database file will be created
-        filename: "./src/db/kanban.sqlite3"
-    },
 
     // SQLite does not support inserting default values if a column is missing in the insert query.
     // This tells Knex to insert NULL instead, which prevents crashes.
@@ -29,6 +24,22 @@ const config: Knex.Config = {
         directory: "./src/db/seeds",
         extension: "ts",
     }
+};
+
+const config: Record<string, Knex.Config> = {
+    development: {
+        ...sharedConfig,
+        connection: {
+            filename: "./src/db/kanban.sqlite3"
+        },
+    },
+
+    test: {
+        ...sharedConfig,
+        connection: {
+            filename: "./src/db/kanban.test.sqlite3"
+        },
+    },
 };
 
 export default config;
