@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import db from "../db/db";
 import type { AuthRequest } from "../middleware/auth";
 
-const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function signup(req: Request, res: Response): Promise<void> {
   try {
