@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: oklch(98% 0.004 95); font-family: 'Inter', system-ui, sans-serif; color: oklch(22% 0.01 95); }
+  input, textarea, select, button { font-family: inherit; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: oklch(88% 0.005 95); border-radius: 8px; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  a { color: oklch(56% 0.16 258); }
+  a:hover { color: oklch(48% 0.16 258); }
+</style>
+</helmet>
+
+<sc-if value="{{ isSignIn }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:oklch(98% 0.004 95);padding:20px">
+  <div style="width:380px;max-width:100%">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:40px;height:40px;border-radius:10px;background:oklch(56% 0.16 258);margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
+        <div style="width:16px;height:16px;border-radius:4px;background:#fff"></div>
+      </div>
+      <h1 style="font-family:Manrope,sans-serif;font-weight:800;font-size:24px;margin:0 0 4px">Welcome back</h1>
+      <p style="color:oklch(50% 0.01 95);font-size:14px;margin:0">Sign in to your kanban workspace</p>
+    </div>
+    <div style="background:#fff;border:1px solid oklch(91% 0.004 95);border-radius:14px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <sc-if value="{{ authError }}" hint-placeholder-val="{{ false }}">
+        <div style="background:oklch(96% 0.03 25);border:1px solid oklch(85% 0.08 25);color:oklch(45% 0.15 25);font-size:13px;padding:10px 12px;border-radius:8px;margin-bottom:16px">{{ authError }}</div>
+      </sc-if>
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px">Email</label>
+      <input type="email" placeholder="you@example.com" value="{{ authEmail }}" onChange="{{ onAuthEmailChange }}" style="width:100%;padding:10px 12px;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:14px;margin-bottom:16px;outline:none" />
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px">Password</label>
+      <input type="password" placeholder="••••••••" value="{{ authPassword }}" onChange="{{ onAuthPasswordChange }}" onKeyDown="{{ onAuthPasswordKeyDown }}" style="width:100%;padding:10px 12px;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:14px;margin-bottom:20px;outline:none" />
+      <button onClick="{{ signIn }}" style="width:100%;padding:11px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer">Sign In</button>
+      <p style="text-align:center;font-size:13px;color:oklch(50% 0.01 95);margin:18px 0 0">No account? <a href="#" onClick="{{ goSignUp }}">Create one</a></p>
+      <p style="text-align:center;font-size:11.5px;color:oklch(65% 0.01 95);margin:12px 0 0">Demo tip: sign up first, then sign in with the same email/password.</p>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSignUp }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:oklch(98% 0.004 95);padding:20px">
+  <div style="width:380px;max-width:100%">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:40px;height:40px;border-radius:10px;background:oklch(56% 0.16 258);margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
+        <div style="width:16px;height:16px;border-radius:4px;background:#fff"></div>
+      </div>
+      <h1 style="font-family:Manrope,sans-serif;font-weight:800;font-size:24px;margin:0 0 4px">Create your account</h1>
+      <p style="color:oklch(50% 0.01 95);font-size:14px;margin:0">Set up a workspace in seconds</p>
+    </div>
+    <div style="background:#fff;border:1px solid oklch(91% 0.004 95);border-radius:14px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <sc-if value="{{ suEmailCollisionError }}" hint-placeholder-val="{{ false }}">
+        <div style="background:oklch(96% 0.03 25);border:1px solid oklch(85% 0.08 25);color:oklch(45% 0.15 25);font-size:13px;padding:10px 12px;border-radius:8px;margin-bottom:16px">{{ suEmailCollisionError }}</div>
+      </sc-if>
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px">Name</label>
+      <input type="text" placeholder="Jordan Lee" value="{{ suName }}" onChange="{{ onSuNameChange }}" style="width:100%;padding:10px 12px;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:14px;margin-bottom:16px;outline:none" />
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px">Email</label>
+      <input type="email" placeholder="you@example.com" value="{{ suEmail }}" onChange="{{ onSuEmailChange }}" style="width:100%;padding:10px 12px;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:14px;margin-bottom:16px;outline:none" />
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px">Password</label>
+      <input type="password" placeholder="••••••••" value="{{ suPassword }}" onChange="{{ onSuPasswordChange }}" style="width:100%;padding:10px 12px;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:14px;margin-bottom:10px;outline:none" />
+      <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:18px">
+        <div style="font-size:12px;display:flex;align-items:center;gap:6px;color:{{ pwLenColor }}"><span>{{ pwLenIcon }}</span> At least 8 characters</div>
+        <div style="font-size:12px;display:flex;align-items:center;gap:6px;color:{{ pwNumColor }}"><span>{{ pwNumIcon }}</span> At least one number</div>
+        <div style="font-size:12px;display:flex;align-items:center;gap:6px;color:{{ pwLetterColor }}"><span>{{ pwLetterIcon }}</span> At least one letter</div>
+      </div>
+      <button onClick="{{ signUp }}" style="width:100%;padding:11px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer">Create Account</button>
+      <p style="text-align:center;font-size:13px;color:oklch(50% 0.01 95);margin:18px 0 0">Already have an account? <a href="#" onClick="{{ goSignIn }}">Sign in</a></p>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;flex-direction:column;background:oklch(98% 0.004 95)">
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:#fff;border-bottom:1px solid oklch(91% 0.004 95);position:relative;z-index:20">
+    <div style="display:flex;align-items:center;gap:18px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:24px;height:24px;border-radius:6px;background:oklch(56% 0.16 258)"></div>
+        <span style="font-family:Manrope,sans-serif;font-weight:800;font-size:15px">Kanban</span>
+      </div>
+      <sc-if value="{{ hasProjects }}" hint-placeholder-val="{{ false }}">
+        <div style="position:relative">
+          <button onClick="{{ toggleProjectDropdown }}" style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:oklch(96% 0.004 95);border:1px solid oklch(91% 0.004 95);border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;color:oklch(22% 0.01 95)">
+            {{ currentProjectName }}
+            <span style="font-size:10px;color:oklch(55% 0.01 95)">▾</span>
+          </button>
+          <sc-if value="{{ showProjectDropdown }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 6px);left:0;min-width:220px;background:#fff;border:1px solid oklch(91% 0.004 95);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:6px;z-index:30">
+              <sc-for list="{{ projectOptions }}" as="p" hint-placeholder-count="2">
+                <button onClick="{{ p.select }}" style="width:100%;text-align:left;padding:8px 10px;border:none;background:{{ p.bg }};border-radius:6px;font-size:13.5px;font-weight:500;cursor:pointer;color:oklch(22% 0.01 95)">{{ p.name }}</button>
+              </sc-for>
+              <div style="height:1px;background:oklch(91% 0.004 95);margin:6px 2px"></div>
+              <button onClick="{{ openCreateProject }}" style="width:100%;text-align:left;padding:8px 10px;border:none;background:none;border-radius:6px;font-size:13.5px;font-weight:600;color:oklch(56% 0.16 258);cursor:pointer">+ New Project</button>
+            </div>
+          </sc-if>
+        </div>
+        <button onClick="{{ openDeleteProject }}" title="Delete project" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid transparent;background:none;border-radius:7px;cursor:pointer;color:oklch(60% 0.01 95)" style-hover="background:oklch(96% 0.03 25);color:oklch(50% 0.15 25)">🗑</button>
+      </sc-if>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:oklch(50% 0.01 95);cursor:pointer;user-select:none">
+        <span style="position:relative;width:32px;height:18px;border-radius:10px;background:{{ simulateToggleBg }};display:inline-block;transition:background .15s" onClick="{{ toggleSimulateFailures }}">
+          <span style="position:absolute;top:2px;left:{{ simulateToggleLeft }};width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)"></span>
+        </span>
+        Simulate network failure
+      </label>
+      <div style="width:1px;height:20px;background:oklch(91% 0.004 95)"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:26px;height:26px;border-radius:50%;background:oklch(56% 0.16 258);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ currentUserInitials }}</div>
+        <span style="font-size:13.5px;font-weight:600">{{ currentUserName }}</span>
+      </div>
+      <button onClick="{{ logOut }}" style="padding:7px 12px;background:none;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:oklch(35% 0.01 95)">Log Out</button>
+    </div>
+  </header>
+
+  <sc-if value="{{ hasProjects }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;padding:28px 24px;overflow:auto">
+    <div style="display:flex;gap:20px;align-items:flex-start;max-width:1280px;margin:0 auto">
+      <sc-for list="{{ columns }}" as="col" hint-placeholder-count="3">
+        <div style="flex:1;min-width:300px;background:oklch(96% 0.004 95);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px" onDragOver="{{ col.onDragOver }}" onDrop="{{ col.onDrop }}" onDragLeave="{{ col.onDragLeave }}">
+          <div style="display:flex;align-items:center;gap:8px;padding:2px 4px">
+            <span style="width:8px;height:8px;border-radius:50%;background:{{ col.accentColor }}"></span>
+            <span style="font-family:Manrope,sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:oklch(35% 0.01 95)">{{ col.label }}</span>
+            <span style="font-size:12px;color:oklch(60% 0.01 95);font-weight:600">{{ col.count }}</span>
+          </div>
+
+          <sc-if value="{{ col.isTodo }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ col.isAdding }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1px solid oklch(88% 0.004 95);border-radius:10px;padding:10px">
+                <input autoFocus="{{ true }}" placeholder="Task title…" value="{{ newTaskTitle }}" onChange="{{ onNewTaskTitleChange }}" onKeyDown="{{ onNewTaskKeyDown }}" style="width:100%;border:none;outline:none;font-size:13.5px;font-weight:500;margin-bottom:8px" />
+                <div style="display:flex;gap:8px">
+                  <button onClick="{{ submitNewTask }}" style="padding:6px 12px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer">Add</button>
+                  <button onClick="{{ cancelNewTask }}" style="padding:6px 12px;background:none;border:none;color:oklch(55% 0.01 95);font-size:12.5px;cursor:pointer">Cancel</button>
+                </div>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <div style="display:flex;flex-direction:column;gap:10px;min-height:40px">
+          <sc-for list="{{ col.tasks }}" as="task" hint-placeholder-count="2">
+            <div draggable="{{ true }}" onDragStart="{{ task.onDragStart }}" style="background:#fff;border:1px solid oklch(90% 0.004 95);border-radius:10px;padding:12px;cursor:grab;box-shadow:0 1px 2px rgba(0,0,0,.03);opacity:{{ task.dragOpacity }}">
+              <div onClick="{{ task.openModal }}" style="font-size:14px;font-weight:700;line-height:1.35;margin-bottom:4px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ task.title }}</div>
+              <sc-if value="{{ task.hasDescription }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:12.5px;color:oklch(50% 0.01 95);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">{{ task.description }}</div>
+              </sc-if>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px">
+                <sc-for list="{{ task.labels }}" as="lbl" hint-placeholder-count="0">
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:100px;font-size:10.5px;font-weight:600;background:{{ lbl.bg }};color:{{ lbl.text }};border:1px solid {{ lbl.border }}">{{ lbl.name }}<span onClick="{{ lbl.remove }}" style="cursor:pointer;opacity:.6;font-weight:700">×</span></span>
+                </sc-for>
+                <button onClick="{{ task.openLabelModal }}" style="padding:2px 7px;border-radius:100px;font-size:10.5px;font-weight:600;background:none;border:1px dashed oklch(80% 0.005 95);color:oklch(55% 0.01 95);cursor:pointer">+ Add label</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:19px;height:19px;border-radius:50%;background:{{ task.assigneeColor }};color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ task.assigneeInitials }}</div>
+                <span style="font-size:11.5px;color:oklch(50% 0.01 95);font-weight:500">{{ task.assigneeName }}</span>
+              </div>
+            </div>
+          </sc-for>
+          </div>
+
+          <sc-if value="{{ col.isTodo }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ col.showAddButton }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ col.startAdding }}" style="width:100%;padding:9px;background:none;border:1px dashed oklch(82% 0.005 95);border-radius:9px;font-size:13px;font-weight:600;color:oklch(50% 0.01 95);cursor:pointer">+ Add Task</button>
+            </sc-if>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isEmptyState }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center">
+      <div style="text-align:center;max-width:340px">
+        <div style="width:56px;height:56px;border-radius:14px;background:oklch(94% 0.01 258);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:24px">📋</div>
+        <h2 style="font-family:Manrope,sans-serif;font-weight:800;font-size:19px;margin:0 0 8px">No projects yet</h2>
+        <p style="font-size:14px;color:oklch(50% 0.01 95);margin:0 0 20px;line-height:1.5">Create your first project to start organizing tasks into swim lanes.</p>
+        <button onClick="{{ openCreateProject }}" style="padding:10px 20px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer">+ New Project</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ showCreateProject }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,18,15,.35);display:flex;align-items:center;justify-content:center;z-index:100" onClick="{{ closeCreateProjectBackdrop }}">
+    <div style="background:#fff;border-radius:14px;padding:24px;width:380px;max-width:calc(100vw - 40px);box-shadow:0 20px 60px rgba(0,0,0,.2)" onClick="{{ stopProp }}">
+      <h3 style="font-family:Manrope,sans-serif;font-weight:800;font-size:17px;margin:0 0 16px">New Project</h3>
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px">Project name</label>
+      <input autoFocus="{{ true }}" value="{{ newProjectName }}" onChange="{{ onNewProjectNameChange }}" onKeyDown="{{ onNewProjectKeyDown }}" placeholder="e.g. Marketing Site Relaunch" style="width:100%;padding:10px 12px;border:1px solid oklch(88% 0.004 95);border-radius:8px;font-size:14px;outline:none;margin-bottom:6px" />
+      <sc-if value="{{ createProjectError }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:12.5px;color:oklch(50% 0.15 25);margin-bottom:10px">{{ createProjectError }}</div>
+      </sc-if>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+        <button onClick="{{ closeCreateProject }}" style="padding:9px 14px;background:none;border:none;font-size:13.5px;font-weight:600;color:oklch(50% 0.01 95);cursor:pointer">Cancel</button>
+        <button onClick="{{ submitCreateProject }}" style="padding:9px 16px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer">Create</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showDeleteProject }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,18,15,.35);display:flex;align-items:center;justify-content:center;z-index:100" onClick="{{ closeDeleteProject }}">
+    <div style="background:#fff;border-radius:14px;padding:24px;width:360px;max-width:calc(100vw - 40px);box-shadow:0 20px 60px rgba(0,0,0,.2)" onClick="{{ stopProp }}">
+      <h3 style="font-family:Manrope,sans-serif;font-weight:800;font-size:17px;margin:0 0 10px">Delete project?</h3>
+      <p style="font-size:13.5px;color:oklch(50% 0.01 95);line-height:1.5;margin:0 0 18px">This will permanently delete <strong>{{ currentProjectName }}</strong> and all of its tasks. This can't be undone.</p>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button onClick="{{ closeDeleteProject }}" style="padding:9px 14px;background:none;border:none;font-size:13.5px;font-weight:600;color:oklch(50% 0.01 95);cursor:pointer">Cancel</button>
+        <button onClick="{{ confirmDeleteProject }}" style="padding:9px 16px;background:oklch(55% 0.19 25);color:#fff;border:none;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer">Delete</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showTaskModal }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,18,15,.35);display:flex;align-items:center;justify-content:center;z-index:100" onClick="{{ closeTaskModal }}">
+    <div style="background:#fff;border-radius:14px;padding:26px;width:520px;max-width:calc(100vw - 40px);max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)" onClick="{{ stopProp }}">
+      <input value="{{ modalTitle }}" onChange="{{ onModalTitleChange }}" onBlur="{{ onModalTitleBlur }}" style="width:100%;border:none;outline:none;font-family:Manrope,sans-serif;font-weight:800;font-size:19px;margin-bottom:10px;padding:2px 0" />
+      <div style="font-size:12px;color:oklch(60% 0.01 95);margin-bottom:16px">Created {{ modalCreatedAt }} · Updated {{ modalUpdatedAt }}</div>
+
+      <label style="display:block;font-size:12px;font-weight:700;color:oklch(50% 0.01 95);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Description</label>
+      <textarea value="{{ modalDescription }}" onChange="{{ onModalDescriptionChange }}" onBlur="{{ onModalDescriptionBlur }}" placeholder="Add a description…" rows="4" style="width:100%;border:1px solid oklch(90% 0.004 95);border-radius:9px;padding:10px;font-size:13.5px;outline:none;resize:vertical;margin-bottom:18px;font-family:inherit"></textarea>
+
+      <label style="display:block;font-size:12px;font-weight:700;color:oklch(50% 0.01 95);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Assignee</label>
+      <select value="{{ modalAssigneeId }}" onChange="{{ onModalAssigneeChange }}" style="width:100%;padding:9px 10px;border:1px solid oklch(90% 0.004 95);border-radius:8px;font-size:13.5px;outline:none;margin-bottom:18px;background:#fff">
+        <sc-for list="{{ userOptions }}" as="u" hint-placeholder-count="3">
+          <option value="{{ u.id }}">{{ u.name }}</option>
+        </sc-for>
+      </select>
+
+      <label style="display:block;font-size:12px;font-weight:700;color:oklch(50% 0.01 95);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Labels</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px">
+        <sc-for list="{{ modalLabels }}" as="lbl" hint-placeholder-count="0">
+          <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:100px;font-size:11.5px;font-weight:600;background:{{ lbl.bg }};color:{{ lbl.text }};border:1px solid {{ lbl.border }}">{{ lbl.name }}<span onClick="{{ lbl.remove }}" style="cursor:pointer;opacity:.6;font-weight:700">×</span></span>
+        </sc-for>
+        <button onClick="{{ openLabelModalFromTask }}" style="padding:3px 9px;border-radius:100px;font-size:11.5px;font-weight:600;background:none;border:1px dashed oklch(80% 0.005 95);color:oklch(55% 0.01 95);cursor:pointer">+ Add label</button>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid oklch(93% 0.004 95);padding-top:16px">
+        <button onClick="{{ deleteTaskClick }}" style="padding:8px 12px;background:{{ deleteTaskBg }};border:none;border-radius:8px;font-size:13px;font-weight:700;color:{{ deleteTaskColor }};cursor:pointer">{{ deleteTaskLabel }}</button>
+        <button onClick="{{ closeTaskModal }}" style="padding:9px 16px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer">Done</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showLabelModal }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,18,15,.35);display:flex;align-items:center;justify-content:center;z-index:110" onClick="{{ closeLabelModal }}">
+    <div style="background:#fff;border-radius:14px;padding:24px;width:400px;max-width:calc(100vw - 40px);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)" onClick="{{ stopProp }}">
+      <h3 style="font-family:Manrope,sans-serif;font-weight:800;font-size:17px;margin:0 0 14px">Manage Labels</h3>
+      <div style="overflow:auto;max-height:230px;display:flex;flex-direction:column;gap:2px;margin-bottom:16px;border:1px solid oklch(93% 0.004 95);border-radius:10px;padding:6px">
+        <sc-for list="{{ allLabelsForModal }}" as="lbl" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:8px" style-hover="background:oklch(97% 0.004 95)">
+            <input type="checkbox" checked="{{ lbl.checked }}" onChange="{{ lbl.toggle }}" style="width:16px;height:16px;cursor:pointer" />
+            <span style="width:10px;height:10px;border-radius:50%;background:{{ lbl.dot }};flex-shrink:0"></span>
+            <span style="font-size:13.5px;font-weight:500;flex:1">{{ lbl.name }}</span>
+            <span onClick="{{ lbl.deleteGlobal }}" style="cursor:pointer;color:oklch(65% 0.01 95);font-size:14px" style-hover="color:oklch(55% 0.15 25)">🗑</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="border-top:1px solid oklch(93% 0.004 95);padding-top:14px">
+        <label style="display:block;font-size:12px;font-weight:700;color:oklch(50% 0.01 95);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Create new label</label>
+        <input value="{{ labelModalNewName }}" onChange="{{ onLabelNewNameChange }}" placeholder="Label name" style="width:100%;padding:9px 10px;border:1px solid oklch(90% 0.004 95);border-radius:8px;font-size:13.5px;outline:none;margin-bottom:10px" />
+        <div style="display:flex;gap:7px;margin-bottom:14px">
+          <sc-for list="{{ labelColorSwatches }}" as="sw" hint-placeholder-count="8">
+            <span onClick="{{ sw.select }}" style="width:22px;height:22px;border-radius:50%;background:{{ sw.color }};cursor:pointer;display:inline-block;box-shadow:{{ sw.ring }}"></span>
+          </sc-for>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button onClick="{{ addNewLabel }}" style="padding:8px 14px;background:oklch(56% 0.16 258);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Add</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px">
+        <button onClick="{{ closeLabelModal }}" style="padding:9px 16px;background:oklch(95% 0.004 95);color:oklch(30% 0.01 95);border:none;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer">Save</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<div style="position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:200">
+  <sc-for list="{{ toastList }}" as="t" hint-placeholder-count="0">
+    <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;color:#fff;background:{{ t.bg }};box-shadow:0 8px 24px rgba(0,0,0,.18);animation:toastIn .2s ease-out;min-width:220px">{{ t.icon }} {{ t.message }}</div>
+  </sc-for>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+
+const TEAMMATES = [
+  { id: 'u1', name: 'Ava Chen' },
+  { id: 'u2', name: 'Marcus Webb' },
+  { id: 'u3', name: 'Priya Nair' },
+  { id: 'u4', name: 'Diego Ruiz' },
+  { id: 'u5', name: 'Lena Kowalski' },
+  { id: 'u6', name: "Sam O'Brien" },
+];
+const LABEL_COLORS = [25, 50, 95, 145, 195, 255, 290, 335];
+const COLUMN_DEFS = [
+  { key: 'TODO', label: 'To Do', accentColor: 'oklch(65% 0.01 95)' },
+  { key: 'IN_PROGRESS', label: 'In Progress', accentColor: 'oklch(70% 0.14 70)' },
+  { key: 'DONE', label: 'Done', accentColor: 'oklch(62% 0.13 150)' },
+];
+
+function uid(p) { return (p || 'id') + '_' + Math.random().toString(36).slice(2, 10); }
+function initials(name) {
+  const parts = (name || '').trim().split(/\s+/);
+  return ((parts[0] || '')[0] || '') + ((parts[1] || '')[0] || '');
+}
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  return 'oklch(60% 0.13 ' + h + ')';
+}
+function fmtDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+function labelStyle(hue) {
+  return { bg: 'oklch(93% 0.05 ' + hue + ')', text: 'oklch(35% 0.11 ' + hue + ')', border: 'oklch(85% 0.08 ' + hue + ')', dot: 'oklch(60% 0.13 ' + hue + ')' };
+}
+
+class Component extends DCLogic {
+  state = {
+    view: 'signin',
+    accounts: [],
+    session: null,
+    authEmail: '', authPassword: '', authError: '',
+    suName: '', suEmail: '', suPassword: '', suEmailCollisionError: '',
+    projects: [], currentProjectId: null, labels: [],
+    showProjectDropdown: false,
+    showCreateProject: false, newProjectName: '', createProjectError: '',
+    showDeleteProject: false,
+    addingTaskColumn: null, newTaskTitle: '',
+    taskModalTaskId: null, taskModalConfirmDelete: false,
+    labelModalTaskId: null, labelModalNewName: '', labelModalNewColorIdx: 0,
+    draggedTaskId: null, draggedFromColumn: null,
+    simulateFailures: false,
+    toasts: [],
+  };
+
+  componentDidMount() {
+    let accounts = [], projects = [], labels = null, session = null;
+    try { accounts = JSON.parse(localStorage.getItem('kb_accounts') || '[]'); } catch (e) {}
+    try { projects = JSON.parse(localStorage.getItem('kb_projects') || '[]'); } catch (e) {}
+    try { labels = JSON.parse(localStorage.getItem('kb_labels') || 'null'); } catch (e) {}
+    try { session = JSON.parse(localStorage.getItem('kb_session') || 'null'); } catch (e) {}
+    if (!labels) {
+      labels = [
+        { id: uid('lbl'), name: 'Bug', hue: 25 },
+        { id: uid('lbl'), name: 'Feature', hue: 255 },
+        { id: uid('lbl'), name: 'Urgent', hue: 50 },
+      ];
+    }
+    const view = (session && accounts.find(a => a.email === session.email)) ? 'dashboard' : 'signin';
+    this.setState({ accounts, projects, labels, session, view, currentProjectId: projects[0] ? projects[0].id : null });
+  }
+
+  persist(patch) {
+    const next = { ...this.state, ...patch };
+    localStorage.setItem('kb_accounts', JSON.stringify(next.accounts));
+    localStorage.setItem('kb_projects', JSON.stringify(next.projects));
+    localStorage.setItem('kb_labels', JSON.stringify(next.labels));
+    localStorage.setItem('kb_session', JSON.stringify(next.session));
+    this.setState(patch);
+  }
+
+  addToast(type, message) {
+    const id = uid('toast');
+    const bg = type === 'error' ? 'oklch(55% 0.18 25)' : 'oklch(45% 0.03 258)';
+    const icon = type === 'error' ? '⚠' : '✓';
+    this.setState(s => ({ toasts: [...s.toasts, { id, message, bg, icon }] }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 3500);
+  }
+
+  onAuthEmailChange = e => this.setState({ authEmail: e.target.value, authError: '' });
+  onAuthPasswordChange = e => this.setState({ authPassword: e.target.value, authError: '' });
+  onAuthPasswordKeyDown = e => { if (e.key === 'Enter') this.signIn(); };
+  goSignUp = e => { e.preventDefault(); this.setState({ view: 'signup', authError: '', suEmailCollisionError: '' }); };
+  goSignIn = e => { e.preventDefault(); this.setState({ view: 'signin', authEmail: '', authPassword: '', authError: '' }); };
+
+  signIn = () => {
+    const { accounts, authEmail, authPassword } = this.state;
+    const match = accounts.find(a => a.email.toLowerCase() === authEmail.trim().toLowerCase() && a.password === authPassword);
+    if (!match) { this.setState({ authError: 'Invalid email or password.' }); return; }
+    this.persist({ session: { email: match.email, name: match.name }, view: 'dashboard', authEmail: '', authPassword: '' });
+  };
+
+  onSuNameChange = e => this.setState({ suName: e.target.value });
+  onSuEmailChange = e => this.setState({ suEmail: e.target.value, suEmailCollisionError: '' });
+  onSuPasswordChange = e => this.setState({ suPassword: e.target.value });
+
+  signUp = () => {
+    const { accounts, suName, suEmail, suPassword } = this.state;
+    if (!suName.trim() || !suEmail.trim() || !suPassword) return;
+    if (!(suPassword.length >= 8 && /\d/.test(suPassword) && /[a-zA-Z]/.test(suPassword))) return;
+    if (accounts.find(a => a.email.toLowerCase() === suEmail.trim().toLowerCase())) {
+      this.setState({ suEmailCollisionError: 'An account with this email already exists.' });
+      return;
+    }
+    const account = { name: suName.trim(), email: suEmail.trim(), password: suPassword };
+    const nextAccounts = [...accounts, account];
+    this.persist({ accounts: nextAccounts, session: { email: account.email, name: account.name }, view: 'dashboard' });
+  };
+
+  toggleProjectDropdown = () => this.setState(s => ({ showProjectDropdown: !s.showProjectDropdown }));
+  openCreateProject = () => this.setState({ showCreateProject: true, showProjectDropdown: false, newProjectName: '', createProjectError: '' });
+  closeCreateProject = () => this.setState({ showCreateProject: false });
+  closeCreateProjectBackdrop = () => this.closeCreateProject();
+  stopProp = e => e.stopPropagation();
+  onNewProjectNameChange = e => this.setState({ newProjectName: e.target.value, createProjectError: '' });
+  onNewProjectKeyDown = e => { if (e.key === 'Enter') this.submitCreateProject(); };
+
+  submitCreateProject = () => {
+    const name = this.state.newProjectName.trim();
+    if (name.length < 3) { this.setState({ createProjectError: 'Project name must be at least 3 characters.' }); return; }
+    if (this.state.projects.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+      this.setState({ createProjectError: 'A project with this name already exists.' }); return;
+    }
+    const project = { id: uid('proj'), name, tasks: [] };
+    const projects = [...this.state.projects, project];
+    this.persist({ projects, currentProjectId: project.id, showCreateProject: false });
+  };
+
+  openDeleteProject = () => this.setState({ showDeleteProject: true });
+  closeDeleteProject = () => this.setState({ showDeleteProject: false });
+  confirmDeleteProject = () => {
+    const projects = this.state.projects.filter(p => p.id !== this.state.currentProjectId);
+    this.persist({ projects, currentProjectId: projects[0] ? projects[0].id : null, showDeleteProject: false });
+    this.addToast('success', 'Project deleted.');
+  };
+
+  logOut = () => this.persist({ session: null, view: 'signin' });
+
+  startAddingTask = () => this.setState({ addingTaskColumn: 'TODO', newTaskTitle: '' });
+  cancelNewTask = () => this.setState({ addingTaskColumn: null, newTaskTitle: '' });
+  onNewTaskTitleChange = e => this.setState({ newTaskTitle: e.target.value });
+  onNewTaskKeyDown = e => { if (e.key === 'Enter') this.submitNewTask(); if (e.key === 'Escape') this.cancelNewTask(); };
+
+  submitNewTask = () => {
+    const title = this.state.newTaskTitle.trim();
+    if (!title) { this.cancelNewTask(); return; }
+    const now = Date.now();
+    const task = { id: uid('task'), title, description: '', column: 'TODO', assigneeId: null, labelIds: [], createdAt: now, updatedAt: now };
+    const projects = this.state.projects.map(p => p.id === this.state.currentProjectId ? { ...p, tasks: [...p.tasks, task] } : p);
+    this.persist({ projects, addingTaskColumn: null, newTaskTitle: '' });
+  };
+
+  updateCurrentProjectTasks(fn) {
+    const projects = this.state.projects.map(p => p.id === this.state.currentProjectId ? { ...p, tasks: fn(p.tasks) } : p);
+    this.persist({ projects });
+  }
+
+  openTaskModal(taskId) { this.setState({ taskModalTaskId: taskId, taskModalConfirmDelete: false }); }
+  closeTaskModal = () => this.setState({ taskModalTaskId: null, taskModalConfirmDelete: false });
+
+  updateTaskField(taskId, field, value) {
+    this.updateCurrentProjectTasks(tasks => tasks.map(t => t.id === taskId ? { ...t, [field]: value, updatedAt: Date.now() } : t));
+  }
+
+  onModalTitleChange = e => this.updateTaskField(this.state.taskModalTaskId, 'title', e.target.value);
+  onModalTitleBlur = () => {};
+  onModalDescriptionChange = e => this.updateTaskField(this.state.taskModalTaskId, 'description', e.target.value);
+  onModalDescriptionBlur = () => {};
+  onModalAssigneeChange = e => this.updateTaskField(this.state.taskModalTaskId, 'assigneeId', e.target.value || null);
+
+  deleteTaskClick = () => {
+    if (!this.state.taskModalConfirmDelete) { this.setState({ taskModalConfirmDelete: true }); return; }
+    const taskId = this.state.taskModalTaskId;
+    this.updateCurrentProjectTasks(tasks => tasks.filter(t => t.id !== taskId));
+    this.setState({ taskModalTaskId: null, taskModalConfirmDelete: false });
+    this.addToast('success', 'Task deleted.');
+  };
+
+  removeLabelFromTask(taskId, labelId) {
+    this.updateCurrentProjectTasks(tasks => tasks.map(t => t.id === taskId ? { ...t, labelIds: t.labelIds.filter(id => id !== labelId), updatedAt: Date.now() } : t));
+  }
+
+  openLabelModal(taskId) { this.setState({ labelModalTaskId: taskId, labelModalNewName: '', labelModalNewColorIdx: 0 }); }
+  openLabelModalFromTask = () => this.openLabelModal(this.state.taskModalTaskId);
+  closeLabelModal = () => this.setState({ labelModalTaskId: null });
+  onLabelNewNameChange = e => this.setState({ labelModalNewName: e.target.value });
+
+  toggleLabelOnTask(taskId, labelId) {
+    this.updateCurrentProjectTasks(tasks => tasks.map(t => {
+      if (t.id !== taskId) return t;
+      const has = t.labelIds.includes(labelId);
+      return { ...t, labelIds: has ? t.labelIds.filter(id => id !== labelId) : [...t.labelIds, labelId], updatedAt: Date.now() };
+    }));
+  }
+
+  deleteGlobalLabel(labelId) {
+    const labels = this.state.labels.filter(l => l.id !== labelId);
+    const projects = this.state.projects.map(p => ({ ...p, tasks: p.tasks.map(t => ({ ...t, labelIds: t.labelIds.filter(id => id !== labelId) })) }));
+    this.persist({ labels, projects });
+  }
+
+  addNewLabel = () => {
+    const name = this.state.labelModalNewName.trim();
+    if (!name) return;
+    const hue = LABEL_COLORS[this.state.labelModalNewColorIdx];
+    const label = { id: uid('lbl'), name, hue };
+    this.persist({ labels: [...this.state.labels, label], labelModalNewName: '', labelModalNewColorIdx: 0 });
+  };
+
+  onDragStart(taskId, fromColumn) {
+    this.setState({ draggedTaskId: taskId, draggedFromColumn: fromColumn });
+  }
+
+  onDrop(toColumn) {
+    const { draggedTaskId, draggedFromColumn, currentProjectId, simulateFailures } = this.state;
+    if (!draggedTaskId || draggedFromColumn === toColumn) { this.setState({ draggedTaskId: null }); return; }
+    const projectIdAtDrag = currentProjectId;
+    this.updateCurrentProjectTasks(tasks => tasks.map(t => t.id === draggedTaskId ? { ...t, column: toColumn, updatedAt: Date.now() } : t));
+    this.setState({ draggedTaskId: null });
+    setTimeout(() => {
+      if (simulateFailures) {
+        const projects = this.state.projects.map(p => p.id === projectIdAtDrag ? { ...p, tasks: p.tasks.map(t => t.id === draggedTaskId ? { ...t, column: draggedFromColumn } : t) } : p);
+        this.persist({ projects });
+        this.addToast('error', 'Update failed — card reverted.');
+      }
+    }, 550);
+  }
+
+  toggleSimulateFailures = () => this.setState(s => ({ simulateFailures: !s.simulateFailures }));
+
+  selectProject(id) { this.setState({ currentProjectId: id, showProjectDropdown: false }); }
+
+  renderVals() {
+    const s = this.state;
+    const currentProject = s.projects.find(p => p.id === s.currentProjectId) || null;
+    const currentUser = s.session ? { id: 'me', name: s.session.name } : null;
+    const allUsers = currentUser ? [currentUser, ...TEAMMATES] : TEAMMATES;
+
+    const pwLen = s.suPassword.length >= 8, pwNum = /\d/.test(s.suPassword), pwLetter = /[a-zA-Z]/.test(s.suPassword);
+    const okColor = 'oklch(55% 0.13 150)', mutedColor = 'oklch(65% 0.01 95)';
+
+    const labelForTask = (task) => (task.labelIds || []).map(lid => {
+      const l = s.labels.find(x => x.id === lid);
+      if (!l) return null;
+      const st = labelStyle(l.hue);
+      return { id: l.id, name: l.name, bg: st.bg, text: st.text, border: st.border, remove: () => this.removeLabelFromTask(task.id, l.id) };
+    }).filter(Boolean);
+
+    const enrichTask = (task) => {
+      const assignee = allUsers.find(u => u.id === task.assigneeId);
+      return {
+        id: task.id, title: task.title, description: task.description,
+        hasDescription: !!task.description,
+        labels: labelForTask(task),
+        assigneeName: assignee ? assignee.name : 'Unassigned',
+        assigneeInitials: assignee ? initials(assignee.name) : '–',
+        assigneeColor: assignee ? avatarColor(assignee.name) : 'oklch(80% 0.005 95)',
+        dragOpacity: s.draggedTaskId === task.id ? 0.4 : 1,
+        onDragStart: () => this.onDragStart(task.id, task.column),
+        openModal: () => this.openTaskModal(task.id),
+        openLabelModal: () => this.openLabelModal(task.id),
+      };
+    };
+
+    const columns = COLUMN_DEFS.map(def => {
+      const tasks = (currentProject ? currentProject.tasks.filter(t => t.column === def.key) : []).map(enrichTask);
+      return {
+        key: def.key, label: def.label, accentColor: def.accentColor, count: tasks.length, tasks,
+        isTodo: def.key === 'TODO',
+        isAdding: s.addingTaskColumn === def.key,
+        showAddButton: s.addingTaskColumn !== def.key,
+        startAdding: () => this.startAddingTask(),
+        onDragOver: e => e.preventDefault(),
+        onDragLeave: () => {},
+        onDrop: () => this.onDrop(def.key),
+      };
+    });
+
+    const projectOptions = s.projects.map(p => ({
+      name: p.name, bg: p.id === s.currentProjectId ? 'oklch(95% 0.02 258)' : 'none', select: () => this.selectProject(p.id),
+    }));
+
+    const modalTask = s.taskModalTaskId ? (currentProject ? currentProject.tasks.find(t => t.id === s.taskModalTaskId) : null) : null;
+
+    return {
+      isSignIn: s.view === 'signin',
+      isSignUp: s.view === 'signup',
+      isDashboard: s.view === 'dashboard',
+      authEmail: s.authEmail, authPassword: s.authPassword, authError: s.authError,
+      onAuthEmailChange: this.onAuthEmailChange, onAuthPasswordChange: this.onAuthPasswordChange, onAuthPasswordKeyDown: this.onAuthPasswordKeyDown,
+      signIn: this.signIn, goSignUp: this.goSignUp, goSignIn: this.goSignIn,
+
+      suName: s.suName, suEmail: s.suEmail, suPassword: s.suPassword, suEmailCollisionError: s.suEmailCollisionError,
+      onSuNameChange: this.onSuNameChange, onSuEmailChange: this.onSuEmailChange, onSuPasswordChange: this.onSuPasswordChange, signUp: this.signUp,
+      pwLenColor: pwLen ? okColor : mutedColor, pwLenIcon: pwLen ? '✓' : '○',
+      pwNumColor: pwNum ? okColor : mutedColor, pwNumIcon: pwNum ? '✓' : '○',
+      pwLetterColor: pwLetter ? okColor : mutedColor, pwLetterIcon: pwLetter ? '✓' : '○',
+
+      hasProjects: s.projects.length > 0,
+      isEmptyState: s.projects.length === 0,
+      currentProjectName: currentProject ? currentProject.name : '',
+      showProjectDropdown: s.showProjectDropdown,
+      toggleProjectDropdown: this.toggleProjectDropdown,
+      projectOptions,
+      openCreateProject: this.openCreateProject,
+      openDeleteProject: this.openDeleteProject,
+
+      currentUserName: currentUser ? currentUser.name : '',
+      currentUserInitials: currentUser ? initials(currentUser.name) : '',
+      logOut: this.logOut,
+      simulateToggleBg: s.simulateFailures ? 'oklch(55% 0.18 25)' : 'oklch(85% 0.005 95)',
+      simulateToggleLeft: s.simulateFailures ? '16px' : '2px',
+      toggleSimulateFailures: this.toggleSimulateFailures,
+
+      columns,
+      newTaskTitle: s.newTaskTitle, onNewTaskTitleChange: this.onNewTaskTitleChange, onNewTaskKeyDown: this.onNewTaskKeyDown,
+      submitNewTask: this.submitNewTask, cancelNewTask: this.cancelNewTask,
+
+      showCreateProject: s.showCreateProject, newProjectName: s.newProjectName, createProjectError: s.createProjectError,
+      closeCreateProject: this.closeCreateProject, closeCreateProjectBackdrop: this.closeCreateProjectBackdrop, stopProp: this.stopProp,
+      onNewProjectNameChange: this.onNewProjectNameChange, onNewProjectKeyDown: this.onNewProjectKeyDown, submitCreateProject: this.submitCreateProject,
+
+      showDeleteProject: s.showDeleteProject, closeDeleteProject: this.closeDeleteProject, confirmDeleteProject: this.confirmDeleteProject,
+
+      showTaskModal: !!modalTask,
+      modalTitle: modalTask ? modalTask.title : '',
+      modalDescription: modalTask ? modalTask.description : '',
+      modalCreatedAt: modalTask ? fmtDate(modalTask.createdAt) : '',
+      modalUpdatedAt: modalTask ? fmtDate(modalTask.updatedAt) : '',
+      modalAssigneeId: modalTask ? (modalTask.assigneeId || '') : '',
+      onModalTitleChange: this.onModalTitleChange, onModalTitleBlur: this.onModalTitleBlur,
+      onModalDescriptionChange: this.onModalDescriptionChange, onModalDescriptionBlur: this.onModalDescriptionBlur,
+      onModalAssigneeChange: this.onModalAssigneeChange,
+      userOptions: [{ id: '', name: 'Unassigned' }, ...allUsers],
+      modalLabels: modalTask ? labelForTask(modalTask) : [],
+      openLabelModalFromTask: this.openLabelModalFromTask,
+      closeTaskModal: this.closeTaskModal,
+      deleteTaskClick: this.deleteTaskClick,
+      deleteTaskLabel: s.taskModalConfirmDelete ? 'Confirm delete?' : 'Delete Task',
+      deleteTaskBg: s.taskModalConfirmDelete ? 'oklch(55% 0.19 25)' : 'none',
+      deleteTaskColor: s.taskModalConfirmDelete ? '#fff' : 'oklch(55% 0.15 25)',
+
+      showLabelModal: !!s.labelModalTaskId,
+      allLabelsForModal: s.labels.map(l => {
+        const st = labelStyle(l.hue);
+        const taskForLabels = currentProject ? currentProject.tasks.find(t => t.id === s.labelModalTaskId) : null;
+        const checked = taskForLabels ? taskForLabels.labelIds.includes(l.id) : false;
+        return { id: l.id, name: l.name, dot: st.dot, checked, toggle: () => this.toggleLabelOnTask(s.labelModalTaskId, l.id), deleteGlobal: () => this.deleteGlobalLabel(l.id) };
+      }),
+      labelModalNewName: s.labelModalNewName, onLabelNewNameChange: this.onLabelNewNameChange,
+      labelColorSwatches: LABEL_COLORS.map((hue, idx) => ({
+        color: 'oklch(65% 0.13 ' + hue + ')',
+        ring: idx === s.labelModalNewColorIdx ? '0 0 0 2px #fff, 0 0 0 4px oklch(56% 0.16 258)' : 'none',
+        select: () => this.setState({ labelModalNewColorIdx: idx }),
+      })),
+      addNewLabel: this.addNewLabel,
+      closeLabelModal: this.closeLabelModal,
+
+      toastList: s.toasts,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

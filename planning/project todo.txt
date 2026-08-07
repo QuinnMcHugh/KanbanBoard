@@ -1,0 +1,116 @@
+
+Kanban Plan
+-----------
+- Learn about the feasibility of Sqlite for this project. Can I use it on Render or would a managed DB hosted elsewhere be preferred? ✅
+ - Render can't host the sqlite file but a remote service like Turso can be used for the db while still using Render (both on free tiers) ✅
+
+- Define the requirements for this project ✅
+ - This application can be thought of as a cross-company view of all projects, with nothing private among users
+ - A UI that allows a user to:
+  - sign in / sign out
+  - view all the projects
+  - open up a project and see the lanes and tasks (with labels if defined)
+  - drag and drop tasks in different lanes
+  - has pre-defined lanes (this isn't customizable)
+  - create new projects
+  - create new tasks
+  - assign labels to a task
+  - create new labels
+  - delete labels
+  - delete tasks
+  - delete projects
+  - assign a person to a task
+  - edit tasks
+  - show the created_at and updated_at times for projects and tasks
+ - Entities: users, projects, tasks and labels
+  - Users can create projects and can have tasks assigned to them by themselves or others
+  - Projects can be created or deleted, and they have tasks associated with them
+  - Tasks can be unassigned or assigned to one person. They can have their status changed by anyone
+  - Labels can be created or deleted, and they can be associated with tasks (a task can have up to 5 labels)
+  - when entities are deleted, their associations to other entities should be cleaned up too ( prevent orphans or bad links)
+ - User auth (email and password) - use jwt (research how this works and how it differs from other auth schemes)
+  - if someone isn't signed in, then they can't view any data of the site except the landing and login pages
+ - Usernames must be unique
+ - Have a monorepo structure for the app with server/ and client/ sub-directories
+  - The client/ code will be a React SPA
+  - The server/ code will facilitate login and implement all API calls 
+
+- Define the data schema (ERD) for this project ✅
+ - Entities:
+  - User
+   - id
+   - username
+   - email
+   - password hash
+  - Project
+   - id
+   - name
+   - created_at
+   - owner_id
+  - Task
+   - id
+   - name
+   - description
+   - status
+   - assigned_to_user_id
+   - project_id
+   - created_at
+   - updated_at
+  - Label
+   - id
+   - name
+   - color
+  - Task_Label
+   - task_id
+   - label_id
+
+- Define the views that must exist ✅
+ - done in `view specs.md`
+
+- Mock up the design screens using Claude Design or Google Stitch (research each) ✅
+ - added a demo in folder `planning/design demo (claude)` with all the desired screens mocked
+
+- Define the API's which must exist ✅
+ - done in `api specs.md`
+
+- Instantiate the DB with the tables and some test data ✅
+- Write SQL queries for all the needed scenarios (see `sql query planning.md`) ✅
+
+- Set up the monorepo but just focus on the Node side for now ✅
+- Set up Knex config and seed the DB with data ✅
+
+- Build the API layer ✅
+ - setup Express server skeleton ✅
+ - implement authentication routes and middleware ✅
+  - now stop for a moment, clean up the code, familiarize ✅
+  - have Gemini export all its context for Claude to take over locally 
+ - implement projects, tasks, labels APIs & queries
+  - projects api's ✅
+  - task api's ✅
+  - label api's ✅
+- Have Claude review everything at this intermediate phase ⚡️
+
+- Test the API with Postman before moving onto the UI
+- Implement pagination
+- Write automated postman tests
+- Create docs for the API contracts? Would that be Swagger or is there something more accepted now? 
+- What is the purpose of odata generally and what are other industry-wide API-related tooling or concepts like odata I could benefit from knowing? How would they be applied in a project like this? 
+- Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? 
+
+- Implement the frontend
+ - broadly speaking, what are different patterns for frontend architecture? What about for React apps? We used the repo/api pattern with caching in Assignments - what else exists / is recommended? 
+- Create storybook React components and combined views
+- Cover error handling (404s), validation
+- Ask AI to stress test the app and look for production-readiness
+- Add rate limiting (something like express-rate-limit)
+- lock down cors() more
+- use "helmet" for basic security headers (not sure what this means but Claude said so)
+
+- Ask AI to look at this project through an interviewer's lens and critique it, ask follow-up questions, suggest further features/improvements
+- Deploy to Render and test in prod
+- Create a free Sqlite DB with Turso and connect to that for production usage
+- Write a post about this on my personal site
+
+
+Notes
+- Have AI review my work after each stage for tips and industry standard guidance
