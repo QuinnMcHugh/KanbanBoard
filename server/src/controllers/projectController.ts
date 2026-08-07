@@ -53,7 +53,7 @@ export async function createProject(req: Request, res: Response): Promise<void> 
         }).returning(["id"]);
 
     const project = await projectsJoinedWithUsers()
-        .where('projects.id', createdProject[0].id)
+        .where('projects.id', createdProject[0]!.id)
         .first();
 
     res.status(201).json({
@@ -85,7 +85,7 @@ export async function updateProject(req: Request, res: Response): Promise<void> 
     }
 
     const project = await projectsJoinedWithUsers()
-        .where('projects.id', updatedProject[0].id)
+        .where('projects.id', updatedProject[0]!.id)
         .first();
 
     res.status(200).json({

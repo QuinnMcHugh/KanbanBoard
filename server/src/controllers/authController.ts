@@ -23,7 +23,7 @@ export async function signup(req: Request, res: Response): Promise<void> {
     password_hash
   }).returning(["id", "username", "email"]);
 
-  const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, { expiresIn: "24h" });
+  const token = jwt.sign({ userId: newUser!.id }, JWT_SECRET, { expiresIn: "24h" });
 
   res.status(201).json({
     message: "User created successfully!",
@@ -67,7 +67,7 @@ export async function login(req: Request, res: Response): Promise<void> {
 export async function getMe(req: AuthRequest, res: Response): Promise<void> {
   const user = await db("users")
     .select("id", "username", "email")
-    .where({ id: req.userId })
+    .where({ id: req.userId! })
     .first();
 
   if (!user) {

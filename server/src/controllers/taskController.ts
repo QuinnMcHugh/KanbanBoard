@@ -132,7 +132,8 @@ export async function getTask(req: Request, res: Response): Promise<void> {
     }
 
     const task = await tasksWithLabels()
-        .where({ 'tasks.id': taskId, 'tasks.project_id': projectId })
+        .where('tasks.id', taskId)
+        .andWhere('tasks.project_id', projectId)
         .first();
 
     if (!task) {
@@ -198,12 +199,12 @@ export async function createTask(req: Request, res: Response): Promise<void> {
                 project_id: projectId,
                 assigned_to_user_id,
             }).returning(["id"]);
-        const newTaskId = initialTask[0].id;
+        const newTaskId = initialTask[0]!.id;
 
         await createTaskLabelsRecords(trx, labelIds, newTaskId);
 
         const task = await tasksWithLabels(trx)
-            .where({ 'tasks.id': newTaskId })
+            .where('tasks.id', newTaskId)
             .first();
 
         task.labels = JSON.parse(task.labels);
@@ -237,10 +238,8 @@ export async function deleteTask(req: Request, res: Response): Promise<void> {
 
     const task = await db.transaction(async (trx) => {
         const found = await tasksWithLabels(trx)
-            .where({
-                'tasks.project_id': projectId,
-                'tasks.id': taskId,
-            })
+            .where('tasks.project_id', projectId)
+            .andWhere('tasks.id', taskId)
             .first();
 
         if (!found) {
@@ -330,7 +329,7 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
                 code: 404,
             };
         }
-        const newTaskId = initialTask[0].id;
+        const newTaskId = initialTask[0]!.id;
 
         if (labelIds) {
             // remove existing task_labels
@@ -342,7 +341,7 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
         }
 
         const task = await tasksWithLabels(trx)
-            .where({ 'tasks.id': newTaskId })
+            .where('tasks.id', newTaskId)
             .first();
 
         task.labels = JSON.parse(task.labels);
