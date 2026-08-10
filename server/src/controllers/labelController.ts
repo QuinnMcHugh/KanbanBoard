@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import db from "../db/db";
+import type { CreateLabelInput, UpdateLabelInput } from "../schemas/labelSchemas";
 
 export async function getLabels(req: Request, res: Response): Promise<void> {
     const labels = await db("labels").select('*');
@@ -9,12 +10,8 @@ export async function getLabels(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function getLabel(req: Request, res: Response): Promise<void> {
+export async function getLabel(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id);
-    if (!id) {
-        res.status(400).json({ error: 'id is required.' });
-        return;
-    }
 
     const label = await db("labels").where({ id }).first();
 
@@ -28,13 +25,8 @@ export async function getLabel(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function createLabel(req: Request, res: Response): Promise<void> {
+export async function createLabel(req: Request<{}, any, CreateLabelInput>, res: Response): Promise<void> {
     const { name, color } = req.body;
-
-    if (!name || !color) {
-        res.status(400).json({ error: "Name and color are required." });
-        return;
-    }
 
     const createdLabel = await db("labels")
         .insert({ name, color })
@@ -45,14 +37,9 @@ export async function createLabel(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function updateLabel(req: Request, res: Response): Promise<void> {
+export async function updateLabel(req: Request<{ id: string }, any, UpdateLabelInput>, res: Response): Promise<void> {
     const id = Number(req.params.id);
     const { name, color } = req.body;
-
-    if (!id || (!name && !color)) {
-        res.status(400).json({ error: 'id is required. At least one additional `label` property is also required.' });
-        return;
-    }
 
     const updatedLabel = await db("labels")
         .where({ id })
@@ -72,12 +59,8 @@ export async function updateLabel(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function deleteLabel(req: Request, res: Response): Promise<void> {
+export async function deleteLabel(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id);
-    if (!id) {
-        res.status(400).json({ error: 'id is required.' });
-        return;
-    }
 
     const label = await db.transaction(async (trx) => {
         const found = await trx("labels").where({ id }).first();

@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import db from "../db/db";
 import type { Knex } from "knex";
+import type { CreateProjectInput, UpdateProjectInput } from "../schemas/projectSchemas";
 
 function projectsJoinedWithUsers(queryBuilder: Knex | Knex.Transaction = db) {
     return queryBuilder("projects")
@@ -21,7 +22,7 @@ export async function getProjects(req: Request, res: Response): Promise<void> {
     });
 };
 
-export async function getProject(req: Request, res: Response): Promise<void> {
+export async function getProject(req: Request<{ id: string }>, res: Response): Promise<void> {
     const project = await projectsJoinedWithUsers()
         .where('projects.id', Number(req.params.id))
         .first();
@@ -38,13 +39,8 @@ export async function getProject(req: Request, res: Response): Promise<void> {
     });
 };
 
-export async function createProject(req: Request, res: Response): Promise<void> {
+export async function createProject(req: Request<{}, any, CreateProjectInput>, res: Response): Promise<void> {
     const { name, owner_id } = req.body;
-
-    if (!name || !owner_id) {
-        res.status(400).json({ error: "Name and owner_id are required." });
-        return;
-    }
 
     const createdProject = await db("projects")
         .insert({
@@ -61,14 +57,9 @@ export async function createProject(req: Request, res: Response): Promise<void> 
     });
 }
 
-export async function updateProject(req: Request, res: Response): Promise<void> {
+export async function updateProject(req: Request<{ id: string }, any, UpdateProjectInput>, res: Response): Promise<void> {
     const id = Number(req.params.id);
     const { name, owner_id } = req.body;
-
-    if (!id || (!name && !owner_id)) {
-        res.status(400).json({ error: 'id is required. At least one additional `project` property is also required.' });
-        return;
-    }
 
     const updatedProject = await db("projects")
         .where({ id })
@@ -93,12 +84,8 @@ export async function updateProject(req: Request, res: Response): Promise<void> 
     });
 }
 
-export async function deleteProject(req: Request, res: Response): Promise<void> {
+export async function deleteProject(req: Request<{ id: string }>, res: Response): Promise<void> {
     const id = Number(req.params.id);
-    if (!id) {
-        res.status(400).json({ error: 'id is required.' });
-        return;
-    }
 
     const project = await db.transaction(async (trx) => {
         const found = await projectsJoinedWithUsers(trx)
