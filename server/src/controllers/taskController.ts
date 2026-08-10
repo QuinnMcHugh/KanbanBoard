@@ -1,14 +1,7 @@
 import type { Request, Response } from "express";
 import db from "../db/db";
 import type { Knex } from "knex";
-
-const TASK_STATUS = {
-    TO_DO: 'to_do',
-    DONE: 'done',
-    IN_PROGRESS: 'in_progress',
-    BLOCKED: 'blocked',
-    IN_REVIEW: 'in_review',
-};
+import type { CreateTaskInput, UpdateTaskInput } from "../schemas/taskSchemas";
 
 function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
     return queryBuilder("tasks")
@@ -24,7 +17,7 @@ function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
         );
 }
 
-async function getUserIdIssues(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number) {
+async function getUserIdIssues(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number | undefined) {
     // verify the incoming assigned_to_user_id exists (if assigned)
     if (assigned_to_user_id) {
         const user = await queryBuilder("users")
@@ -43,7 +36,7 @@ async function getUserIdIssues(queryBuilder: Knex | Knex.Transaction = db, assig
     return null;
 }
 
-async function getLabelIdsIssues(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[]) {
+async function getLabelIdsIssues(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[] | undefined) {
     // verify the incoming label id's exist
     if (labelIds?.length) {
         const labels = await queryBuilder('labels')
@@ -71,7 +64,7 @@ async function getLabelIdsIssues(queryBuilder: Knex | Knex.Transaction = db, lab
     return null;
 }
 
-async function createTaskLabelsRecords(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[], newTaskId: number) {
+async function createTaskLabelsRecords(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[] | undefined, newTaskId: number) {
     // lay down new entries in task_labels
     if (labelIds?.length) {
         const newTaskLabels = labelIds.map((label_id: number) => ({ task_id: newTaskId, label_id }));
@@ -80,12 +73,8 @@ async function createTaskLabelsRecords(queryBuilder: Knex | Knex.Transaction = d
     }
 }
 
-async function rejectIfInvalidProjectId(req: Request, res: Response): Promise<boolean> {
+async function rejectIfProjectNotFound(req: Request, res: Response): Promise<boolean> {
     const project_id = Number(req.params.projectId);
-    if (!project_id) {
-        res.status(400).json({ error: 'Missing project id.' });
-        return true;
-    }
 
     const project = await db("projects")
         .where({ id: project_id })
@@ -100,9 +89,9 @@ async function rejectIfInvalidProjectId(req: Request, res: Response): Promise<bo
     return false;
 }
 
-export async function getTasks(req: Request, res: Response): Promise<void> {
+export async function getTasks(req: Request<{ projectId: string }>, res: Response): Promise<void> {
     const project_id = Number(req.params.projectId);
-    if (await rejectIfInvalidProjectId(req, res)) {
+    if (await rejectIfProjectNotFound(req, res)) {
         return;
     }
 
@@ -118,16 +107,11 @@ export async function getTasks(req: Request, res: Response): Promise<void> {
     });
 };
 
-export async function getTask(req: Request, res: Response): Promise<void> {
+export async function getTask(req: Request<{ id: string; projectId: string }>, res: Response): Promise<void> {
     const taskId = Number(req.params.id);
     const projectId = Number(req.params.projectId);
 
-    if (await rejectIfInvalidProjectId(req, res)) {
-        return;
-    }
-
-    if (!taskId) {
-        res.status(400).json({ error: 'No task id specified.' });
+    if (await rejectIfProjectNotFound(req, res)) {
         return;
     }
 
@@ -148,30 +132,13 @@ export async function getTask(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function createTask(req: Request, res: Response): Promise<void> {
-    if (await rejectIfInvalidProjectId(req, res)) {
+export async function createTask(req: Request<{ projectId: string }, any, CreateTaskInput>, res: Response): Promise<void> {
+    if (await rejectIfProjectNotFound(req, res)) {
         return;
     }
 
     const projectId = Number(req.params.projectId);
     const { name, description, status, assigned_to_user_id, labelIds } = req.body;
-
-    const invalidStatus = !status ||
-        (
-            status !== TASK_STATUS.BLOCKED &&
-            status !== TASK_STATUS.DONE &&
-            status !== TASK_STATUS.IN_PROGRESS &&
-            status !== TASK_STATUS.IN_REVIEW &&
-            status !== TASK_STATUS.TO_DO
-        );
-
-    if (!name) {
-        res.status(400).json({ error: 'No task name provided.' });
-        return;
-    } else if (invalidStatus) {
-        res.status(400).json({ error: 'Task status is invalid.' });
-        return;
-    }
 
     let result: {
         success: boolean,
@@ -224,17 +191,13 @@ export async function createTask(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function deleteTask(req: Request, res: Response): Promise<void> {
-    if (await rejectIfInvalidProjectId(req, res)) {
+export async function deleteTask(req: Request<{ id: string; projectId: string }>, res: Response): Promise<void> {
+    if (await rejectIfProjectNotFound(req, res)) {
         return;
     }
 
     const projectId = Number(req.params.projectId);
     const taskId = Number(req.params.id);
-    if (!taskId) {
-        res.status(400).json({ error: 'id is required.' });
-        return;
-    }
 
     const task = await db.transaction(async (trx) => {
         const found = await tasksWithLabels(trx)
@@ -263,35 +226,14 @@ export async function deleteTask(req: Request, res: Response): Promise<void> {
     });
 }
 
-export async function updateTask(req: Request, res: Response): Promise<void> {
-    if (await rejectIfInvalidProjectId(req, res)) {
+export async function updateTask(req: Request<{ id: string; projectId: string }, any, UpdateTaskInput>, res: Response): Promise<void> {
+    if (await rejectIfProjectNotFound(req, res)) {
         return;
     }
 
     const projectId = Number(req.params.projectId);
     const taskId = Number(req.params.id);
     const { name, description, status, assigned_to_user_id, labelIds, project_id: projectIdBody } = req.body;
-
-    const invalidStatus = status &&
-        (
-            status !== TASK_STATUS.BLOCKED &&
-            status !== TASK_STATUS.DONE &&
-            status !== TASK_STATUS.IN_PROGRESS &&
-            status !== TASK_STATUS.IN_REVIEW &&
-            status !== TASK_STATUS.TO_DO
-        );
-    const noBodyParamsProvided = !name && typeof description !== 'string' && !status && !assigned_to_user_id && !labelIds && !projectIdBody;
-
-    if (!taskId) {
-        res.status(400).json({ error: 'id is required.' });
-        return;
-    } else if (invalidStatus) {
-        res.status(400).json({ error: 'Task status is invalid.' });
-        return;
-    } else if (noBodyParamsProvided) {
-        res.status(400).json({ error: 'PATCH requires at least one valid property in JSON body.' });
-        return;
-    }
 
     let result: {
         success: boolean,

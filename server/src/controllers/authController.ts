@@ -3,16 +3,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../db/db";
 import type { AuthRequest } from "../middleware/auth";
+import type { LoginInput, SignupInput } from "../schemas/authSchemas";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function signup(req: Request, res: Response): Promise<void> {
+export async function signup(req: Request<{}, any, SignupInput>, res: Response): Promise<void> {
   const { username, email, password } = req.body;
-
-  if (!username || !email || !password) {
-    res.status(400).json({ error: "Username, email, and password are required." });
-    return;
-  }
 
   const saltRounds = 10;
   const password_hash = await bcrypt.hash(password, saltRounds);
@@ -32,13 +28,8 @@ export async function signup(req: Request, res: Response): Promise<void> {
   });
 };
 
-export async function login(req: Request, res: Response): Promise<void> {
+export async function login(req: Request<{}, any, LoginInput>, res: Response): Promise<void> {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    res.status(400).json({ error: "Email and password are required." });
-    return;
-  }
 
   const user = await db("users").where({ email }).first();
 

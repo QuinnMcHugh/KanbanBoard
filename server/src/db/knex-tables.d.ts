@@ -1,6 +1,5 @@
 import type { Knex } from "knex";
-
-export type TaskStatus = "to_do" | "in_progress" | "done" | "in_review" | "blocked";
+import type { TaskStatus } from "../schemas/taskSchemas";
 
 interface User {
     id: number;
@@ -63,7 +62,15 @@ declare module "knex/types/tables" {
 
         tasks: Knex.CompositeTableType<
             Task,
-            Omit<Task, "id" | "created_at" | "updated_at" | "status"> & { id?: number; status?: TaskStatus },
+            Omit<Task, "id" | "created_at" | "updated_at" | "status" | "assigned_to_user_id"> & {
+                id?: number;
+                status?: TaskStatus;
+                // Nullable in the DB, and the app passes an explicit `undefined` (not just
+                // an omitted key) when nobody's assigned — useNullAsDefault turns that into
+                // NULL at insert time. exactOptionalPropertyTypes needs `| undefined` spelled
+                // out to accept that explicitly, not just an omitted key.
+                assigned_to_user_id?: number | null | undefined;
+            },
             // updated_at is set via trx.fn.now() (a Knex.Raw), never a plain string, in practice.
             Partial<Omit<Task, "id" | "created_at" | "updated_at">> & { updated_at?: string | Knex.Raw }
         >;
