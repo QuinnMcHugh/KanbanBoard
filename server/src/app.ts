@@ -1,6 +1,7 @@
 import "./env";
 import express from "express";
 import cors from "cors";
+import { corsOptions } from "./corsOptions";
 import authRoutes from "./routes/authRoutes";
 import healthRoutes from "./routes/healthRoutes";
 import projectRoutes from "./routes/projectRoutes";
@@ -10,7 +11,7 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
