@@ -15,6 +15,11 @@ describe("GET /api/projects/:projectId/tasks", () => {
         expect(res.status).toBe(404);
     });
 
+    it("400s for a non-numeric projectId", async () => {
+        const res = await request(app).get("/api/projects/not-a-number/tasks").set(authHeader());
+        expect(res.status).toBe(400);
+    });
+
     it("lists tasks scoped to the project, with labels parsed as real arrays", async () => {
         const res = await request(app).get("/api/projects/1/tasks").set(authHeader());
 
@@ -48,6 +53,11 @@ describe("GET /api/projects/:projectId/tasks/:id", () => {
         // task 7 belongs to project 3, not project 1
         const res = await request(app).get("/api/projects/1/tasks/7").set(authHeader());
         expect(res.status).toBe(404);
+    });
+
+    it("400s for a non-numeric task id", async () => {
+        const res = await request(app).get("/api/projects/1/tasks/not-a-number").set(authHeader());
+        expect(res.status).toBe(400);
     });
 });
 
@@ -101,6 +111,15 @@ describe("POST /api/projects/:projectId/tasks", () => {
             .send({ ...validPayload, assigned_to_user_id: 9999 });
 
         expect(res.status).toBe(404);
+    });
+
+    it("400s when labelIds contains a non-numeric entry", async () => {
+        const res = await request(app)
+            .post("/api/projects/1/tasks")
+            .set(authHeader())
+            .send({ ...validPayload, labelIds: ["abc"] });
+
+        expect(res.status).toBe(400);
     });
 
     it("400s and names the missing ids when labelIds references nonexistent labels", async () => {

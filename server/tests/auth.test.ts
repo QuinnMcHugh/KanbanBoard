@@ -26,6 +26,26 @@ describe("POST /api/auth/signup", () => {
         expect(res.status).toBe(400);
     });
 
+    it("400s on a malformed email", async () => {
+        const res = await request(app).post("/api/auth/signup").send({
+            username: "bad_email_user",
+            email: "not-an-email",
+            password: "password123",
+        });
+
+        expect(res.status).toBe(400);
+    });
+
+    it("400s on a password shorter than 8 characters", async () => {
+        const res = await request(app).post("/api/auth/signup").send({
+            username: "weak_password_user",
+            email: "weak_password_user@example.com",
+            password: "abc123",
+        });
+
+        expect(res.status).toBe(400);
+    });
+
     it("409s on a duplicate email", async () => {
         await request(app).post("/api/auth/signup").send({
             username: "dupe_one",
@@ -62,6 +82,22 @@ describe("POST /api/auth/login", () => {
 
         expect(res.status).toBe(200);
         expect(res.body.token).toEqual(expect.any(String));
+    });
+
+    it("normalizes email casing, so login works regardless of the case used at signup", async () => {
+        await request(app).post("/api/auth/signup").send({
+            username: "case_test_user",
+            email: "CaseTest@Example.com",
+            password: "password123",
+        });
+
+        const res = await request(app).post("/api/auth/login").send({
+            email: "casetest@example.com",
+            password: "password123",
+        });
+
+        expect(res.status).toBe(200);
+        expect(res.body.user.email).toBe("casetest@example.com");
     });
 
     it("401s on wrong password", async () => {

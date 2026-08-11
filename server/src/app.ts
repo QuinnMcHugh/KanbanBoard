@@ -1,6 +1,7 @@
 import "./env";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import pinoHttp from "pino-http";
 import { corsOptions } from "./corsOptions";
 import { logger } from "./logger";
@@ -13,6 +14,7 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(pinoHttp({ logger }));

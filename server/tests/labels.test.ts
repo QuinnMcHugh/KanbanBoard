@@ -30,6 +30,11 @@ describe("GET /api/labels/:id", () => {
         const res = await request(app).get("/api/labels/9999").set(authHeader());
         expect(res.status).toBe(404);
     });
+
+    it("400s for a non-numeric id", async () => {
+        const res = await request(app).get("/api/labels/not-a-number").set(authHeader());
+        expect(res.status).toBe(400);
+    });
 });
 
 describe("POST /api/labels", () => {
@@ -62,6 +67,15 @@ describe("POST /api/labels", () => {
 
         expect(res.status).toBe(409);
     });
+
+    it("400s when color isn't a valid hex code", async () => {
+        const res = await request(app)
+            .post("/api/labels")
+            .set(authHeader())
+            .send({ name: "Bad Color", color: "notahex" });
+
+        expect(res.status).toBe(400);
+    });
 });
 
 describe("PATCH /api/labels/:id", () => {
@@ -85,6 +99,11 @@ describe("PATCH /api/labels/:id", () => {
     it("409s when renamed to a name that's already taken", async () => {
         const res = await request(app).patch("/api/labels/1").set(authHeader()).send({ name: "Backend" });
         expect(res.status).toBe(409);
+    });
+
+    it("400s when color isn't a valid hex code", async () => {
+        const res = await request(app).patch("/api/labels/1").set(authHeader()).send({ color: "notahex" });
+        expect(res.status).toBe(400);
     });
 });
 

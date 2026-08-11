@@ -32,6 +32,11 @@ describe("GET /api/projects/:id", () => {
         const res = await request(app).get("/api/projects/9999").set(authHeader());
         expect(res.status).toBe(404);
     });
+
+    it("400s for a non-numeric id", async () => {
+        const res = await request(app).get("/api/projects/not-a-number").set(authHeader());
+        expect(res.status).toBe(400);
+    });
 });
 
 describe("POST /api/projects", () => {

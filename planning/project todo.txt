@@ -90,11 +90,12 @@ Kanban Plan
   - label api's ✅
 - Have Claude review everything at this intermediate phase ✅
 - Test the API with Postman before moving onto the UI ✅
+- Add more tests ✅
 
-- Cover error handling (404s), validation ⚡️
-- use "helmet" for basic security headers (not sure what this means but Claude said so)
+- Cover error handling (404s), validation ✅
+- Use "helmet" for basic security headers (not sure what this means but Claude said so) ✅
 
-- Create docs for the API contracts? Would that be Swagger or is there something more accepted now? 
+- Create docs for the API contracts? Would that be Swagger or is there something more accepted now? ⚡️
  - Use Zod for this: zod-to-openai (spec generation) and Scalar (for rendering) 
 - What is the purpose of odata generally and what are other industry-wide API-related tooling or concepts like odata I could benefit from knowing? How would they be applied in a project like this? 
 
