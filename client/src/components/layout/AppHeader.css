@@ -1,0 +1,131 @@
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    z-index: 20;
+}
+
+.app-header__left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.app-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-header__logo {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: var(--color-accent);
+}
+
+.app-header__brand-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.app-header__project-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--color-text);
+}
+
+.app-header__chevron {
+    font-size: 10px;
+    color: var(--color-text-subtle);
+}
+
+.app-header__project-menu {
+    min-width: 220px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    padding: 6px;
+    z-index: 30;
+}
+
+.app-header__project-menu-item {
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--color-text);
+    outline: none;
+}
+
+.app-header__project-menu-item:focus,
+.app-header__project-menu-item:hover {
+    background: var(--color-surface-muted);
+}
+
+.app-header__project-menu-item--active {
+    background: var(--color-accent-subtle);
+}
+
+.app-header__project-menu-item--accent {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.app-header__project-menu-separator {
+    height: 1px;
+    background: var(--color-border);
+    margin: 6px 2px;
+}
+
+.app-header__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid transparent;
+    background: none;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--color-text-subtle);
+}
+
+.app-header__icon-btn:hover {
+    background: var(--color-danger-subtle-bg);
+    color: var(--color-danger-subtle-text);
+}
+
+.app-header__right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.app-header__user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-header__user-name {
+    font-size: 13.5px;
+    font-weight: 600;
+}

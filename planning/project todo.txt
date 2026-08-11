@@ -99,11 +99,27 @@ Kanban Plan
  - Use Zod for this: zod-to-openai (spec generation) and Scalar (for rendering) 
 - What is the purpose of odata generally and what are other industry-wide API-related tooling or concepts like odata I could benefit from knowing? How would they be applied in a project like this? ✅
 
-- Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? ⚡️
+- Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? ✅ 
 
-- Implement the frontend
- - broadly speaking, what are different patterns for frontend architecture? What about for React apps? We used the repo/api pattern with caching in Assignments - what else exists / is recommended? 
-- Use Vite, React, native css
+- Begin the frontend ✅
+- Set up project scaffolding ⚡️
+- Use Vite, React, native css, Radix UI ⚡️
+- Implement auth flow
+  - When unauth'd, show login page
+    - Show login validation failures
+  - When auth'd (where do we store that jwt?), land on dashboard page
+    - with my current /login route, how would the token be returned to the client and where should it be stored? 
+- With storybook
+ - automated a11y checks: @storybook/addon-a11y 
+- Add eslint to UI project
+ - and plugins: eslint-plugin-react-hooks, eslint-plugin-jsx-a11y 
+- React Router
+- @dnd-kit for drag and drop
+- Add vitest tests
+ - RTL for component tests
+ - Playwright for e2e tests 
+- Add a top-level error boundary 
+
 - Create storybook React components and combined views
 - Ask AI to stress test the app and look for production-readiness
 
