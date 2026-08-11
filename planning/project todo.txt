@@ -95,19 +95,21 @@ Kanban Plan
 - Cover error handling (404s), validation ✅
 - Use "helmet" for basic security headers (not sure what this means but Claude said so) ✅
 
-- Create docs for the API contracts? Would that be Swagger or is there something more accepted now? ⚡️
+- Create docs for the API contracts? Would that be Swagger or is there something more accepted now? ✅
  - Use Zod for this: zod-to-openai (spec generation) and Scalar (for rendering) 
-- What is the purpose of odata generally and what are other industry-wide API-related tooling or concepts like odata I could benefit from knowing? How would they be applied in a project like this? 
+- What is the purpose of odata generally and what are other industry-wide API-related tooling or concepts like odata I could benefit from knowing? How would they be applied in a project like this? ✅
 
-- Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? 
+- Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? ⚡️
 
 - Implement the frontend
  - broadly speaking, what are different patterns for frontend architecture? What about for React apps? We used the repo/api pattern with caching in Assignments - what else exists / is recommended? 
+- Use Vite, React, native css
 - Create storybook React components and combined views
 - Ask AI to stress test the app and look for production-readiness
 
 
 - Ask AI to look at this project through an interviewer's lens and critique it, ask follow-up questions, suggest further features/improvements
+- Create prod knex config - close other prod-readiness gaps
 - Deploy to Render and test in prod
 - Create a free Sqlite DB with Turso and connect to that for production usage
 - Write a post about this on my personal site

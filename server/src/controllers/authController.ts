@@ -4,10 +4,11 @@ import jwt from "jsonwebtoken";
 import db from "../db/db";
 import type { AuthRequest } from "../middleware/auth";
 import type { LoginInput, SignupInput } from "../schemas/authSchemas";
+import { NotFoundError, UnauthorizedError } from "../errors";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function signup(req: Request<{}, any, SignupInput>, res: Response): Promise<void> {
+export async function signup(req: Request<Record<string, never>, any, SignupInput>, res: Response): Promise<void> {
   const { username, email, password } = req.body;
 
   const saltRounds = 10;
@@ -28,22 +29,20 @@ export async function signup(req: Request<{}, any, SignupInput>, res: Response):
   });
 };
 
-export async function login(req: Request<{}, any, LoginInput>, res: Response): Promise<void> {
+export async function login(req: Request<Record<string, never>, any, LoginInput>, res: Response): Promise<void> {
   const { email, password } = req.body;
 
   const user = await db("users").where({ email }).first();
 
   const genericBadSigninMessage = 'Invalid email or password.';
   if (!user) {
-    res.status(401).json({ error: genericBadSigninMessage });
-    return;
+    throw new UnauthorizedError(genericBadSigninMessage);
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
   if (!isPasswordValid) {
-    res.status(401).json({ error: genericBadSigninMessage });
-    return;
+    throw new UnauthorizedError(genericBadSigninMessage);
   }
 
   const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "24h" });
@@ -62,8 +61,7 @@ export async function getMe(req: AuthRequest, res: Response): Promise<void> {
     .first();
 
   if (!user) {
-    res.status(404).json({ error: "User not found." });
-    return;
+    throw new NotFoundError("User not found.");
   }
 
   res.status(200).json({ user });

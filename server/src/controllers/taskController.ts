@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import db from "../db/db";
 import type { Knex } from "knex";
 import type { CreateTaskInput, UpdateTaskInput } from "../schemas/taskSchemas";
+import { BadRequestError, NotFoundError } from "../errors";
 
 function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
     return queryBuilder("tasks")
@@ -17,7 +18,7 @@ function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
         );
 }
 
-async function getUserIdIssues(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number | undefined) {
+async function assertUserIdExists(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number | undefined): Promise<void> {
     // verify the incoming assigned_to_user_id exists (if assigned)
     if (assigned_to_user_id) {
         const user = await queryBuilder("users")
@@ -25,18 +26,12 @@ async function getUserIdIssues(queryBuilder: Knex | Knex.Transaction = db, assig
             .select('id')
             .first();
         if (!user) {
-            return {
-                success: false,
-                message: 'The user for this task could not be found.',
-                code: 404,
-            };
+            throw new NotFoundError('The user for this task could not be found.');
         }
     }
-
-    return null;
 }
 
-async function getLabelIdsIssues(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[] | undefined) {
+async function assertLabelIdsExist(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[] | undefined): Promise<void> {
     // verify the incoming label id's exist
     if (labelIds?.length) {
         const labels = await queryBuilder('labels')
@@ -53,15 +48,9 @@ async function getLabelIdsIssues(queryBuilder: Knex | Knex.Transaction = db, lab
                 }
             });
 
-            return {
-                success: false,
-                message: `Labels with these id's not found: ${[...missingLabelsSet].join(', ')}`,
-                code: 400,
-            };
+            throw new BadRequestError(`Labels with these id's not found: ${[...missingLabelsSet].join(', ')}`);
         }
     }
-
-    return null;
 }
 
 async function createTaskLabelsRecords(queryBuilder: Knex | Knex.Transaction = db, labelIds: number[] | undefined, newTaskId: number) {
@@ -73,7 +62,7 @@ async function createTaskLabelsRecords(queryBuilder: Knex | Knex.Transaction = d
     }
 }
 
-async function rejectIfProjectNotFound(req: Request, res: Response): Promise<boolean> {
+async function assertProjectExists(req: Request): Promise<void> {
     const project_id = Number(req.params.projectId);
 
     const project = await db("projects")
@@ -82,18 +71,13 @@ async function rejectIfProjectNotFound(req: Request, res: Response): Promise<boo
         .first();
 
     if (!project) {
-        res.status(404).json({ error: 'Project ID was not found.' });
-        return true;
+        throw new NotFoundError('Project ID was not found.');
     }
-
-    return false;
 }
 
 export async function getTasks(req: Request<{ projectId: string }>, res: Response): Promise<void> {
+    await assertProjectExists(req);
     const project_id = Number(req.params.projectId);
-    if (await rejectIfProjectNotFound(req, res)) {
-        return;
-    }
 
     const tasks = await tasksWithLabels()
         .where('tasks.project_id', project_id);
@@ -111,9 +95,7 @@ export async function getTask(req: Request<{ id: string; projectId: string }>, r
     const taskId = Number(req.params.id);
     const projectId = Number(req.params.projectId);
 
-    if (await rejectIfProjectNotFound(req, res)) {
-        return;
-    }
+    await assertProjectExists(req);
 
     const task = await tasksWithLabels()
         .where('tasks.id', taskId)
@@ -121,8 +103,7 @@ export async function getTask(req: Request<{ id: string; projectId: string }>, r
         .first();
 
     if (!task) {
-        res.status(404).json({ error: 'Could not find task.' });
-        return;
+        throw new NotFoundError('Could not find task.');
     }
 
     task.labels = JSON.parse(task.labels);
@@ -133,30 +114,14 @@ export async function getTask(req: Request<{ id: string; projectId: string }>, r
 }
 
 export async function createTask(req: Request<{ projectId: string }, any, CreateTaskInput>, res: Response): Promise<void> {
-    if (await rejectIfProjectNotFound(req, res)) {
-        return;
-    }
+    await assertProjectExists(req);
 
     const projectId = Number(req.params.projectId);
     const { name, description, status, assigned_to_user_id, labelIds } = req.body;
 
-    let result: {
-        success: boolean,
-        task?: Object,
-        code?: number,
-        message?: string,
-    };
-
-    result = await db.transaction(async (trx) => {
-        const hasUserIdIssues = await getUserIdIssues(trx, assigned_to_user_id);
-        if (hasUserIdIssues) {
-            return hasUserIdIssues;
-        }
-
-        const hasLabelIdsIssues = await getLabelIdsIssues(trx, labelIds);
-        if (hasLabelIdsIssues) {
-            return hasLabelIdsIssues;
-        }
+    const task = await db.transaction(async (trx) => {
+        await assertUserIdExists(trx, assigned_to_user_id);
+        await assertLabelIdsExist(trx, labelIds);
 
         const initialTask = await trx("tasks")
             .insert({
@@ -170,31 +135,21 @@ export async function createTask(req: Request<{ projectId: string }, any, Create
 
         await createTaskLabelsRecords(trx, labelIds, newTaskId);
 
-        const task = await tasksWithLabels(trx)
+        const result = await tasksWithLabels(trx)
             .where('tasks.id', newTaskId)
             .first();
 
-        task.labels = JSON.parse(task.labels);
-        return {
-            success: true,
-            task,
-        };
+        result.labels = JSON.parse(result.labels);
+        return result;
     });
 
-    if (!result.success) {
-        res.status(result.code!).json({ error: result.message });
-        return;
-    }
-
     res.status(201).json({
-        task: result.task,
+        task,
     });
 }
 
 export async function deleteTask(req: Request<{ id: string; projectId: string }>, res: Response): Promise<void> {
-    if (await rejectIfProjectNotFound(req, res)) {
-        return;
-    }
+    await assertProjectExists(req);
 
     const projectId = Number(req.params.projectId);
     const taskId = Number(req.params.id);
@@ -206,18 +161,13 @@ export async function deleteTask(req: Request<{ id: string; projectId: string }>
             .first();
 
         if (!found) {
-            return null;
+            throw new NotFoundError('Could not find task matching id.');
         }
 
         await trx("tasks").where({ id: taskId }).delete();
 
         return found;
     });
-
-    if (!task) {
-        res.status(404).json({ error: 'Could not find task matching id.' });
-        return;
-    }
 
     task.labels = JSON.parse(task.labels);
 
@@ -227,31 +177,15 @@ export async function deleteTask(req: Request<{ id: string; projectId: string }>
 }
 
 export async function updateTask(req: Request<{ id: string; projectId: string }, any, UpdateTaskInput>, res: Response): Promise<void> {
-    if (await rejectIfProjectNotFound(req, res)) {
-        return;
-    }
+    await assertProjectExists(req);
 
     const projectId = Number(req.params.projectId);
     const taskId = Number(req.params.id);
     const { name, description, status, assigned_to_user_id, labelIds, project_id: projectIdBody } = req.body;
 
-    let result: {
-        success: boolean,
-        task?: Object,
-        code?: number,
-        message?: string,
-    };
-
-    result = await db.transaction(async (trx) => {
-        const hasUserIdIssues = await getUserIdIssues(trx, assigned_to_user_id);
-        if (hasUserIdIssues) {
-            return hasUserIdIssues;
-        }
-
-        const hasLabelIdsIssues = await getLabelIdsIssues(trx, labelIds);
-        if (hasLabelIdsIssues) {
-            return hasLabelIdsIssues;
-        }
+    const task = await db.transaction(async (trx) => {
+        await assertUserIdExists(trx, assigned_to_user_id);
+        await assertLabelIdsExist(trx, labelIds);
 
         const initialTask = await trx("tasks")
             .where({ id: taskId, project_id: projectId })
@@ -265,11 +199,7 @@ export async function updateTask(req: Request<{ id: string; projectId: string },
             }).returning(["id"]);
 
         if (!initialTask.length) {
-            return {
-                success: false,
-                message: "Task not found.",
-                code: 404,
-            };
+            throw new NotFoundError("Task not found.");
         }
         const newTaskId = initialTask[0]!.id;
 
@@ -282,23 +212,15 @@ export async function updateTask(req: Request<{ id: string; projectId: string },
             await createTaskLabelsRecords(trx, labelIds, newTaskId);
         }
 
-        const task = await tasksWithLabels(trx)
+        const result = await tasksWithLabels(trx)
             .where('tasks.id', newTaskId)
             .first();
 
-        task.labels = JSON.parse(task.labels);
-        return {
-            success: true,
-            task,
-        };
+        result.labels = JSON.parse(result.labels);
+        return result;
     });
 
-    if (!result.success) {
-        res.status(result.code!).json({ error: result.message });
-        return;
-    }
-
     res.status(200).json({
-        task: result.task,
+        task,
     });
 }

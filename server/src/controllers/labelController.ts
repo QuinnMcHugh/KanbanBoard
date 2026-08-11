@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import db from "../db/db";
 import type { CreateLabelInput, UpdateLabelInput } from "../schemas/labelSchemas";
+import { NotFoundError } from "../errors";
 
 export async function getLabels(req: Request, res: Response): Promise<void> {
     const labels = await db("labels").select('*');
@@ -16,8 +17,7 @@ export async function getLabel(req: Request<{ id: string }>, res: Response): Pro
     const label = await db("labels").where({ id }).first();
 
     if (!label) {
-        res.status(404).json({ error: 'Label not found.' });
-        return;
+        throw new NotFoundError('Label not found.');
     }
 
     res.status(200).json({
@@ -25,7 +25,7 @@ export async function getLabel(req: Request<{ id: string }>, res: Response): Pro
     });
 }
 
-export async function createLabel(req: Request<{}, any, CreateLabelInput>, res: Response): Promise<void> {
+export async function createLabel(req: Request<Record<string, never>, any, CreateLabelInput>, res: Response): Promise<void> {
     const { name, color } = req.body;
 
     const createdLabel = await db("labels")
@@ -50,8 +50,7 @@ export async function updateLabel(req: Request<{ id: string }, any, UpdateLabelI
         .returning(["id", "name", "color"]);
 
     if (!updatedLabel.length) {
-        res.status(404).json({ error: 'Label not found.' });
-        return;
+        throw new NotFoundError('Label not found.');
     }
 
     res.status(200).json({
@@ -66,18 +65,13 @@ export async function deleteLabel(req: Request<{ id: string }>, res: Response): 
         const found = await trx("labels").where({ id }).first();
 
         if (!found) {
-            return null;
+            throw new NotFoundError('Could not find label matching id.');
         }
 
         await trx("labels").where({ id }).delete();
 
         return found;
     });
-
-    if (!label) {
-        res.status(404).json({ error: 'Could not find label matching id.' });
-        return;
-    }
 
     res.status(200).json({
         label,

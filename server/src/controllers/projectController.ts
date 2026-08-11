@@ -37,7 +37,7 @@ export async function getProject(req: Request<{ id: string }>, res: Response): P
     });
 };
 
-export async function createProject(req: Request<{}, any, CreateProjectInput>, res: Response): Promise<void> {
+export async function createProject(req: Request<Record<string, never>, any, CreateProjectInput>, res: Response): Promise<void> {
     const { name, owner_id } = req.body;
 
     const createdProject = await db("projects")
