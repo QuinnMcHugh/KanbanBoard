@@ -1,6 +1,12 @@
 import type { ErrorRequestHandler } from "express";
+import { AppError } from "../errors";
 
 export const errorHandler: ErrorRequestHandler = (err: any, req, res, next) => {
+    if (err instanceof AppError) {
+        res.status(err.statusCode).json({ error: err.message });
+        return;
+    }
+
     if (typeof err?.status === "number" && err.status < 500) {
         res.status(err.status).json({ error: err.message || "Malformed request." });
         return;

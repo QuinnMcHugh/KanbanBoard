@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import db from "../db/db";
 import type { Knex } from "knex";
 import type { CreateProjectInput, UpdateProjectInput } from "../schemas/projectSchemas";
+import { NotFoundError } from "../errors";
 
 function projectsJoinedWithUsers(queryBuilder: Knex | Knex.Transaction = db) {
     return queryBuilder("projects")
@@ -28,10 +29,7 @@ export async function getProject(req: Request<{ id: string }>, res: Response): P
         .first();
 
     if (!project) {
-        res.status(404).json({
-            error: "Project not found.",
-        });
-        return;
+        throw new NotFoundError("Project not found.");
     }
 
     res.status(200).json({
@@ -69,10 +67,7 @@ export async function updateProject(req: Request<{ id: string }, any, UpdateProj
         }).returning('id');
 
     if (!updatedProject.length) {
-        res.status(404).json({
-            error: "Project not found.",
-        });
-        return;
+        throw new NotFoundError("Project not found.");
     }
 
     const project = await projectsJoinedWithUsers()
@@ -93,18 +88,13 @@ export async function deleteProject(req: Request<{ id: string }>, res: Response)
             .first();
 
         if (!found) {
-            return null;
+            throw new NotFoundError("Could not find project matching id.");
         }
 
         await trx("projects").where({ id }).delete();
 
         return found;
     });
-
-    if (!project) {
-        res.status(404).json({ error: 'Could not find project matching id.' });
-        return;
-    }
 
     res.status(200).json({
         project,

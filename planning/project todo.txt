@@ -92,15 +92,11 @@ Kanban Plan
 - Test the API with Postman before moving onto the UI ✅
 
 - Cover error handling (404s), validation ⚡️
-- Add rate limiting (something like express-rate-limit)
-- lock down cors() more
 - use "helmet" for basic security headers (not sure what this means but Claude said so)
 
 - Create docs for the API contracts? Would that be Swagger or is there something more accepted now? 
  - Use Zod for this: zod-to-openai (spec generation) and Scalar (for rendering) 
 - What is the purpose of odata generally and what are other industry-wide API-related tooling or concepts like odata I could benefit from knowing? How would they be applied in a project like this? 
-
-- Implement pagination 
 
 - Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? 
 
