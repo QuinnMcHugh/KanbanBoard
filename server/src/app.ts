@@ -1,7 +1,9 @@
 import "./env";
 import express from "express";
 import cors from "cors";
+import pinoHttp from "pino-http";
 import { corsOptions } from "./corsOptions";
+import { logger } from "./logger";
 import authRoutes from "./routes/authRoutes";
 import healthRoutes from "./routes/healthRoutes";
 import projectRoutes from "./routes/projectRoutes";
@@ -13,6 +15,11 @@ const app = express();
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(pinoHttp({ logger }));
+app.use((req, res, next) => {
+    res.setHeader("X-Request-Id", String(req.id));
+    next();
+});
 
 app.use("/api/auth", authRoutes);
 
