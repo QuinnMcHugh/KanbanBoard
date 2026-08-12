@@ -102,13 +102,20 @@ Kanban Plan
 - Ask AI to thoroughly review the entire project thus far and make any suggestions that would make it more robust and industry-standard. Are there any tools (like automated testing) that it would be good to have included here? ✅ 
 
 - Begin the frontend ✅
-- Set up project scaffolding ⚡️
-- Use Vite, React, native css, Radix UI ⚡️
-- Implement auth flow
-  - When unauth'd, show login page
-    - Show login validation failures
-  - When auth'd (where do we store that jwt?), land on dashboard page
-    - with my current /login route, how would the token be returned to the client and where should it be stored? 
+- Set up UI project scaffolding ✅
+- Use Vite, React, native css, Radix UI ✅
+- Implement auth flow ⚡️
+  - When unauth'd, show login page ✅
+    - Show login validation failures ⚡️
+  - When auth'd (where do we store that jwt?), land on dashboard page ✅
+  - Support creating a new user via /signup ⚡️
+
+- api layer
+ - some common appFetch() method that everything calls
+ - some way of expecting the return type so it doesn't need to be coerced from `any`
+ - includes standard headers (content-type: json)
+
+
 - With storybook
  - automated a11y checks: @storybook/addon-a11y 
 - Add eslint to UI project

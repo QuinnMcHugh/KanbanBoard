@@ -1,15 +1,32 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { AuthLayout } from "./auth/AuthLayout";
+import { useAuth } from "../context/useAuth";
 
 export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error] = useState("");
 
+    const { setSession } = useAuth();
+
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
-        // TODO: wire up to POST /api/auth/login
+
+        fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                password,
+                email,
+            }),
+        }).then(async (response) => {
+            if (response.ok) {
+                const result = await response.json();
+                // triggers navigation via App.tsx react-router
+                setSession(result.user, result.token);
+            }
+        });
     };
 
     return (

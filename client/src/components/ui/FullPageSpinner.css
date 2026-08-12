@@ -1,0 +1,23 @@
+.full-page-spinner {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+}
+
+.full-page-spinner__ring {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid var(--color-border-light);
+    border-top-color: var(--color-accent);
+    animation: full-page-spinner-spin 0.7s linear infinite;
+}
+
+@keyframes full-page-spinner-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
