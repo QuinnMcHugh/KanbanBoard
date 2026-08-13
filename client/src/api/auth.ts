@@ -1,6 +1,8 @@
-import type { ApiErrorResponse } from "../types/auth";
+import type { ApiErrorResponse, AuthSuccessResponse } from "../types/auth";
 
-interface CheckSignUpResponse {
+export const JWT_TOKEN_KEY = 'jwt_token';
+
+export interface CheckSignUpResponse {
     message: string;
 }
 
@@ -21,9 +23,44 @@ export async function checkAreCredentialsAvailable(
         CheckSignUpResponse & ApiErrorResponse
     >;
 
-    if (!response.ok) {
-        throw new Error(jsonBody.error ?? "Unable to check availability.");
-    }
-
     return jsonBody as CheckSignUpResponse;
+}
+
+export async function signup(password: string, email: string, username: string) {
+    const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            password,
+            email,
+            username,
+        }),
+    });
+    return (await response.json()) as Partial<
+        AuthSuccessResponse & ApiErrorResponse
+    >;
+}
+
+export async function login(password: string, email: string) {
+    const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, email }),
+    });
+    return (await response.json()) as Partial<
+        AuthSuccessResponse & ApiErrorResponse
+    >;
+}
+
+export async function getMe() {
+    const localStorageToken = window.localStorage.getItem(JWT_TOKEN_KEY)
+    const response = await fetch('/api/auth/me', {
+        method: 'GET',
+        headers: {
+            "Authorization": `Bearer ${localStorageToken}`,
+        },
+    })
+    return (await response.json()) as Partial<
+        Pick<AuthSuccessResponse, 'user'> & ApiErrorResponse
+    >;
 }

@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    type ReactNode,
+} from "react";
 import { AuthContext, type AuthContextValue } from "./authContext";
 import type { User } from "../types/user";
+import { getMe } from "../api/auth";
 
-export const JWT_TOKEN_KEY = 'jwt_token';
+export const JWT_TOKEN_KEY = "jwt_token";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -10,41 +17,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isInitializing, setIsInitializing] = useState<boolean>(true);
 
     const setToken = useCallback((_token) => {
-        _setToken(_token)
-        window.localStorage.setItem(JWT_TOKEN_KEY, _token)
-    }, [])
+        _setToken(_token);
+        window.localStorage.setItem(JWT_TOKEN_KEY, _token);
+    }, []);
 
     useEffect(() => {
-        const localStorageToken = window.localStorage.getItem(JWT_TOKEN_KEY)
+        const localStorageToken = window.localStorage.getItem(JWT_TOKEN_KEY);
         if (localStorageToken) {
             try {
-                fetch('/api/auth/me', {
-                    method: 'GET',
-                    headers: {
-                        "Authorization": `Bearer ${localStorageToken}`,
-                    },
-                }).then((response) => {
-                    if (response.ok) {
-                        return response.json()
-                    }
-                    return null
-                }).then((result) => {
+                getMe().then((result) => {
                     if (result && result.user) {
-                        setToken(localStorageToken)
-                        setUser(result.user)
+                        setToken(localStorageToken);
+                        setUser(result.user);
                     }
-                    setIsInitializing(false)
-                })
+                    setIsInitializing(false);
+                });
             } catch (ex) {
-                console.log(ex)
-                window.localStorage.removeItem(JWT_TOKEN_KEY)
-                setIsInitializing(false)
+                console.log(ex);
+                window.localStorage.removeItem(JWT_TOKEN_KEY);
+                setIsInitializing(false);
             }
         } else {
-            window.localStorage.removeItem(JWT_TOKEN_KEY)
-            setIsInitializing(false)
+            window.localStorage.removeItem(JWT_TOKEN_KEY);
+            setIsInitializing(false);
         }
-    }, [])
+    }, []);
 
     const value = useMemo<AuthContextValue>(
         () => ({
@@ -58,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             clearSession: () => {
                 setUser(null);
                 setToken(null);
-                window.localStorage.removeItem(JWT_TOKEN_KEY)
+                window.localStorage.removeItem(JWT_TOKEN_KEY);
             },
         }),
         [user, token, isInitializing],

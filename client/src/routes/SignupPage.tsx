@@ -9,29 +9,18 @@ import {
 import { Link } from "react-router-dom";
 import { AuthLayout } from "./auth/AuthLayout";
 import { debounce } from "../lib/debounce";
-import { useAuth } from "../context/useAuth";
-import { checkAreCredentialsAvailable } from "../api/auth";
-import type { ApiErrorResponse, AuthSuccessResponse } from "../types/auth";
+import {
+    checkAreCredentialsAvailable,
+    type CheckSignUpResponse,
+} from "../api/auth";
+import { useSignup } from "../hooks/useSignup";
+import type { ApiErrorResponse } from "../types/auth";
 
 async function _checkAreCredentialsAvailable(
     username: string,
     email: string,
-): Promise<{ success: boolean; message: string }> {
-    try {
-        await checkAreCredentialsAvailable(username, email);
-        return {
-            success: true,
-            message: "",
-        };
-    } catch (ex) {
-        return {
-            success: false,
-            message:
-                ex instanceof Error
-                    ? ex.message
-                    : "Unable to check availability.",
-        };
-    }
+): Promise<Partial<CheckSignUpResponse & ApiErrorResponse>> {
+    return await checkAreCredentialsAvailable(username, email);
 }
 const debouncedCheckCredentials = debounce(_checkAreCredentialsAvailable, 500);
 
@@ -58,62 +47,30 @@ export function SignupPage() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const [isCredentialsAvailable, setIsCredentialsAvailable] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { setSession } = useAuth();
+    const { signup, isSubmitting, error, setError } = useSignup();
 
     const hasMinLength = password.length >= 8;
     const hasNumber = /\d/.test(password);
     const hasLetter = /[a-zA-Z]/.test(password);
 
-    const submitSignup = async () => {
-        setError("");
-        setIsSubmitting(true);
-
-        try {
-            const response = await fetch("/api/auth/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    password,
-                    email,
-                    username,
-                }),
-            });
-            const result = (await response.json()) as Partial<
-                AuthSuccessResponse & ApiErrorResponse
-            >;
-
-            if (result.user && result.token) {
-                // triggers navigation via App.tsx react-router
-                setSession(result.user, result.token);
-            } else if (result.error) {
-                setError(result.error);
-            }
-        } catch {
-            setError("Sign up failed.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
-        void submitSignup();
+        // triggers navigation via App.tsx react-router on success
+        signup(username, email, password);
     };
 
     const isUsernameEmailComboAvailable = useCallback(async () => {
         const response = await debouncedCheckCredentials(username, email);
-        if (response.success) {
+        if (!response.error) {
             setError("");
             return true;
         } else {
-            setError(response.message);
+            setError(response.error);
             return false;
         }
-    }, [username, email]);
+    }, [username, email, setError]);
 
     const isCreatePreconditionsEnabled =
         username &&

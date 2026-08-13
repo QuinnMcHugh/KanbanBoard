@@ -108,14 +108,14 @@ Kanban Plan
   - When unauth'd, show login page ✅
     - Show login validation failures ✅
   - When auth'd (where do we store that jwt?), land on dashboard page ✅
-  - Support creating a new user via /signup ⚡️
+  - Support creating a new user via /signup ✅
    - show email and password validation errors ✅
    - email + username can't already be in use by another user ✅
     - surface such a message if so ✅
     - once all three fields are filled in, debounce a call checking if the username+email are free ✅
     - send api call creating user and redirecting to /projects 
 
-- api call layer
+- api call layer ⚡️
  - some common appFetch() method that everything calls
  - some way of expecting the return type so it doesn't need to be coerced from `any`
  - includes standard headers (content-type: json)
