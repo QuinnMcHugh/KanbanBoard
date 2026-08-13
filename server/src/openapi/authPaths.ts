@@ -1,5 +1,5 @@
 import { registry } from "./registry";
-import { authResponseSchema, loginSchema, meResponseSchema, signupSchema } from "../schemas/authSchemas";
+import { authResponseSchema, checkSignupAvailabilityResponseSchema, checkSignupAvailabilitySchema, loginSchema, meResponseSchema, signupSchema } from "../schemas/authSchemas";
 import { authFailureResponses, notFoundResponse, validationFailureResponse } from "./shared";
 
 const rateLimitedResponse = notFoundResponse(
@@ -16,6 +16,22 @@ registry.registerPath({
     },
     responses: {
         201: { description: "Account created.", content: { "application/json": { schema: authResponseSchema } } },
+        400: validationFailureResponse,
+        409: notFoundResponse("Username or email already in use."),
+        429: rateLimitedResponse,
+    },
+});
+
+registry.registerPath({
+    method: "post",
+    path: "/api/auth/checkSignup",
+    tags: ["Auth"],
+    summary: "Check if account sign-in is available",
+    request: {
+        body: { content: { "application/json": { schema: checkSignupAvailabilitySchema } } },
+    },
+    responses: {
+        200: { description: "Username / email combo is available", content: { "application/json": { schema: checkSignupAvailabilityResponseSchema } } },
         400: validationFailureResponse,
         409: notFoundResponse("Username or email already in use."),
         429: rateLimitedResponse,

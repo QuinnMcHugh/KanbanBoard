@@ -2,31 +2,46 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { AuthLayout } from "./auth/AuthLayout";
 import { useAuth } from "../context/useAuth";
+import type { ApiErrorResponse, AuthSuccessResponse } from "../types/auth";
 
 export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error] = useState("");
+    const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { setSession } = useAuth();
 
-    const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
+    const submitLogin = async () => {
+        setError("");
+        setIsSubmitting(true);
 
-        fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                password,
-                email,
-            }),
-        }).then(async (response) => {
-            if (response.ok) {
-                const result = await response.json();
+        try {
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password, email }),
+            });
+            const result = (await response.json()) as Partial<
+                AuthSuccessResponse & ApiErrorResponse
+            >;
+
+            if (result.user && result.token) {
                 // triggers navigation via App.tsx react-router
                 setSession(result.user, result.token);
+            } else if (result.error) {
+                setError(result.error);
             }
-        });
+        } catch {
+            setError("Something went wrong. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleSubmit = (event: FormEvent) => {
+        event.preventDefault();
+        submitLogin();
     };
 
     return (
@@ -56,8 +71,12 @@ export function LoginPage() {
                         onChange={(event) => setPassword(event.target.value)}
                     />
                 </div>
-                <button type="submit" className="btn btn-primary btn-block">
-                    Sign In
+                <button
+                    type="submit"
+                    className="btn btn-primary btn-block"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "Signing in…" : "Sign In"}
                 </button>
                 <p className="auth-layout__footer-text">
                     No account? <Link to="/signup">Create one</Link>

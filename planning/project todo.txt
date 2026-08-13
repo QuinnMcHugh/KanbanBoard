@@ -106,15 +106,21 @@ Kanban Plan
 - Use Vite, React, native css, Radix UI ✅
 - Implement auth flow ⚡️
   - When unauth'd, show login page ✅
-    - Show login validation failures ⚡️
+    - Show login validation failures ✅
   - When auth'd (where do we store that jwt?), land on dashboard page ✅
   - Support creating a new user via /signup ⚡️
+   - show email and password validation errors ✅
+   - email + username can't already be in use by another user ✅
+    - surface such a message if so ✅
+    - once all three fields are filled in, debounce a call checking if the username+email are free ✅
+    - send api call creating user and redirecting to /projects 
 
-- api layer
+- api call layer
  - some common appFetch() method that everything calls
  - some way of expecting the return type so it doesn't need to be coerced from `any`
  - includes standard headers (content-type: json)
 
+- why is my old "testing" "asdf@jkl.com" "password123" user still being remembered after being deleted from the sql db manually?
 
 - With storybook
  - automated a11y checks: @storybook/addon-a11y 

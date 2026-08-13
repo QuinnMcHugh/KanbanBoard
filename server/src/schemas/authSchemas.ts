@@ -1,25 +1,35 @@
 import { z } from "zod";
 
+const usernameEmailCombo = {
+    username: z
+        .string()
+        .trim()
+        .min(3, "Username must be at least 3 characters.")
+        .max(32, "Username max length exceeded.")
+        .meta({ description: "Public display name, 3-32 characters.", example: "alice_admin" }),
+    email: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .email("A valid email is required.")
+        .meta({ description: "Normalized to lowercase before storage/lookup.", example: "alice@example.com" }),
+};
+
 export const signupSchema = z
     .object({
-        username: z
-            .string()
-            .trim()
-            .min(3, "Username must be at least 3 characters.")
-            .max(32, "Username max length exceeded.")
-            .meta({ description: "Public display name, 3-32 characters.", example: "alice_admin" }),
-        email: z
-            .string()
-            .trim()
-            .toLowerCase()
-            .email("A valid email is required.")
-            .meta({ description: "Normalized to lowercase before storage/lookup.", example: "alice@example.com" }),
+        ...usernameEmailCombo,
         password: z
             .string()
             .min(8, "Password must be at least 8 characters.")
             .meta({ description: "Minimum 8 characters. Never returned in any response." }),
     })
     .meta({ id: "SignupRequest", description: "Body for creating a new user account." });
+
+export const checkSignupAvailabilitySchema = z
+    .object({
+        ...usernameEmailCombo,
+    })
+    .meta({ id: "CheckSignupAvailabilityRequest", description: "Body for checking if a new user account username/email combo is valid." });
 
 export const loginSchema = z
     .object({
@@ -48,5 +58,10 @@ export const meResponseSchema = z
     .object({ user: userSchema })
     .meta({ id: "MeResponse", description: "The currently authenticated user's profile." });
 
+export const checkSignupAvailabilityResponseSchema = z
+    .object({ message: z.string() })
+    .meta({ id: "CheckSignupAvailabilityResponse", description: "Availability of the a credentials sign-in." });
+
 export type SignupInput = z.infer<typeof signupSchema>;
+export type CheckSignupAvailabilityInput = z.infer<typeof checkSignupAvailabilitySchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

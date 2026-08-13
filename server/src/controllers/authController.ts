@@ -3,10 +3,29 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../db/db";
 import type { AuthRequest } from "../middleware/auth";
-import type { LoginInput, SignupInput } from "../schemas/authSchemas";
-import { NotFoundError, UnauthorizedError } from "../errors";
+import type { CheckSignupAvailabilityInput, LoginInput, SignupInput } from "../schemas/authSchemas";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../errors";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+
+export async function checkSignupAvailability(req: Request<Record<string, never>, any, CheckSignupAvailabilityInput>, res: Response): Promise<void> {
+  const { username, email } = req.body;
+
+  const [existingUser] = await db("users").where({ email }).orWhere({ username }).returning(["id", "username", "email"]);
+
+  if (existingUser) {
+    const isEmailMatch = existingUser.email === email;
+    throw new ConflictError(
+      isEmailMatch
+        ? "Email already in use."
+        : "Username already in use."
+    );
+  }
+
+  res.status(200).json({
+    message: "Username / email combo is available",
+  });
+};
 
 export async function signup(req: Request<Record<string, never>, any, SignupInput>, res: Response): Promise<void> {
   const { username, email, password } = req.body;
