@@ -62,6 +62,10 @@ export const checkSignupAvailabilityResponseSchema = z
     .object({ message: z.string() })
     .meta({ id: "CheckSignupAvailabilityResponse", description: "Availability of the a credentials sign-in." });
 
+export const userListResponseSchema = z
+    .object({ users: z.array(userSchema) })
+    .meta({ id: "UserListResponse" });
+
 export type SignupInput = z.infer<typeof signupSchema>;
 export type CheckSignupAvailabilityInput = z.infer<typeof checkSignupAvailabilitySchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

@@ -6,6 +6,7 @@ import "./authPaths";
 import "./projectPaths";
 import "./labelPaths";
 import "./taskPaths";
+import "./userPaths";
 
 export function generateOpenApiDocument() {
     const generator = new OpenApiGeneratorV31(registry.definitions);

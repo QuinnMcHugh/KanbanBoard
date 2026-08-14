@@ -18,7 +18,7 @@ function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
         );
 }
 
-async function assertUserIdExists(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number | undefined): Promise<void> {
+async function assertUserIdExists(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number | null | undefined): Promise<void> {
     // verify the incoming assigned_to_user_id exists (if assigned)
     if (assigned_to_user_id) {
         const user = await queryBuilder("users")
@@ -194,7 +194,7 @@ export async function updateTask(req: Request<{ id: string; projectId: string },
                 ...(status ? { status } : {}),
                 ...(typeof description === 'string' ? { description } : {}),
                 ...(projectIdBody ? { project_id: projectIdBody } : {}),
-                ...(assigned_to_user_id ? { assigned_to_user_id } : {}),
+                ...(assigned_to_user_id !== undefined ? { assigned_to_user_id } : {}),
                 updated_at: trx.fn.now(),
             }).returning(["id"]);
 

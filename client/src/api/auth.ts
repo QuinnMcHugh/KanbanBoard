@@ -1,6 +1,7 @@
 import type { ApiErrorResponse, AuthSuccessResponse } from "../types/auth";
+import { HttpMethod } from "../lib/apiClient";
 
-export const JWT_TOKEN_KEY = 'jwt_token';
+export const JWT_TOKEN_KEY = "jwt_token";
 
 export interface CheckSignUpResponse {
     message: string;
@@ -11,7 +12,7 @@ export async function checkAreCredentialsAvailable(
     email: string,
 ): Promise<CheckSignUpResponse> {
     const response = await fetch("/api/auth/checkSignup", {
-        method: "POST",
+        method: HttpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             username,
@@ -26,9 +27,13 @@ export async function checkAreCredentialsAvailable(
     return jsonBody as CheckSignUpResponse;
 }
 
-export async function signup(password: string, email: string, username: string) {
+export async function signup(
+    password: string,
+    email: string,
+    username: string,
+) {
     const response = await fetch("/api/auth/signup", {
-        method: "POST",
+        method: HttpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             password,
@@ -43,7 +48,7 @@ export async function signup(password: string, email: string, username: string) 
 
 export async function login(password: string, email: string) {
     const response = await fetch("/api/auth/login", {
-        method: "POST",
+        method: HttpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password, email }),
     });
@@ -53,14 +58,14 @@ export async function login(password: string, email: string) {
 }
 
 export async function getMe() {
-    const localStorageToken = window.localStorage.getItem(JWT_TOKEN_KEY)
-    const response = await fetch('/api/auth/me', {
-        method: 'GET',
+    const localStorageToken = window.localStorage.getItem(JWT_TOKEN_KEY);
+    const response = await fetch("/api/auth/me", {
+        method: HttpMethod.GET,
         headers: {
-            "Authorization": `Bearer ${localStorageToken}`,
+            Authorization: `Bearer ${localStorageToken}`,
         },
-    })
+    });
     return (await response.json()) as Partial<
-        Pick<AuthSuccessResponse, 'user'> & ApiErrorResponse
+        Pick<AuthSuccessResponse, "user"> & ApiErrorResponse
     >;
 }

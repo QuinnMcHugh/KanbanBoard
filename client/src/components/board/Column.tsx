@@ -3,6 +3,7 @@ import type { Task } from "../../types/task";
 import type { ColumnDef } from "./columnDefs";
 import { TaskCard } from "./TaskCard";
 import "./Column.css";
+import { useUsers } from "../../hooks/useUsers";
 
 interface ColumnProps {
     def: ColumnDef;
@@ -23,6 +24,8 @@ export function Column({
 }: ColumnProps) {
     const [isAdding, setIsAdding] = useState(false);
     const [newTaskName, setNewTaskName] = useState("");
+
+    const { usersById } = useUsers()
 
     const cancelAdding = () => {
         setIsAdding(false);
@@ -82,6 +85,7 @@ export function Column({
                     <TaskCard
                         key={task.id}
                         task={task}
+                        assigneeName={usersById[task.assigned_to_user_id]}
                         onOpen={() => onOpenTask(task.id)}
                         onOpenLabelPicker={() => onOpenLabelPicker(task.id)}
                         onRemoveLabel={(labelId) =>

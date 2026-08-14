@@ -115,12 +115,17 @@ Kanban Plan
     - once all three fields are filled in, debounce a call checking if the username+email are free ✅
     - send api call creating user and redirecting to /projects 
 
-- api call layer ⚡️
+- api call layer ✅
  - some common appFetch() method that everything calls
  - some way of expecting the return type so it doesn't need to be coerced from `any`
  - includes standard headers (content-type: json)
 
-- why is my old "testing" "asdf@jkl.com" "password123" user still being remembered after being deleted from the sql db manually?
+-implement modals ⚡️
+ - task modal
+ - new project modal
+ - add label
+
+- drag and drop between columns
 
 - With storybook
  - automated a11y checks: @storybook/addon-a11y 

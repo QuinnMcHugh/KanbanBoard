@@ -29,7 +29,13 @@ export const updateTaskSchema = z
         name: z.string().trim().min(1, "Name cannot be empty.").optional(),
         description: z.string().min(1, "Description cannot be empty.").optional(),
         status: z.enum(TASK_STATUSES, "Task status is invalid.").optional(),
-        assigned_to_user_id: z.number().int().positive("assigned_to_user_id must be a positive integer.").optional(),
+        assigned_to_user_id: z
+            .number()
+            .int()
+            .positive("assigned_to_user_id must be a positive integer.")
+            .nullable()
+            .optional()
+            .meta({ description: "Set to null to unassign the task. Omit to leave it unchanged." }),
         labelIds: labelIdsSchema
             .optional()
             .meta({ description: "Replaces the task's entire label set. Omit to leave labels untouched; send [] to clear them." }),

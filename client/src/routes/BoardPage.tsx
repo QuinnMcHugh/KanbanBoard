@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../components/ui/useToast";
+import { FullPageSpinner } from "../components/ui/FullPageSpinner";
 import { AppHeader } from "../components/layout/AppHeader";
 import { Board } from "../components/board/Board";
 import { EmptyState } from "../components/board/EmptyState";
@@ -9,14 +10,10 @@ import { CreateProjectDialog } from "../components/modals/CreateProjectDialog";
 import { DeleteProjectDialog } from "../components/modals/DeleteProjectDialog";
 import { TaskDetailDialog } from "../components/modals/TaskDetailDialog";
 import { LabelManagerDialog } from "../components/modals/LabelManagerDialog";
-import type { Project } from "../types/project";
-import type { Task } from "../types/task";
-import type { Label } from "../types/label";
-import {
-    MOCK_LABELS,
-    MOCK_PROJECTS,
-    MOCK_TASKS_BY_PROJECT,
-} from "./board/mockBoardData";
+import { useProjects } from "../hooks/useProjects";
+import { useTasks } from "../hooks/useTasks";
+import { useLabels } from "../hooks/useLabels";
+import { useUsers } from "../hooks/useUsers";
 import "./BoardPage.css";
 
 export function BoardPage() {
@@ -25,13 +22,21 @@ export function BoardPage() {
     const { user, clearSession } = useAuth();
     const { addToast } = useToast();
 
-    // Placeholder local state — replace with real API calls (projects/tasks/labels)
-    // once the client is wired up to the backend.
-    const [projects, setProjects] = useState<Project[]>(MOCK_PROJECTS);
-    const [tasksByProject, setTasksByProject] = useState<
-        Record<number, Task[]>
-    >(MOCK_TASKS_BY_PROJECT);
-    const [labels, setLabels] = useState<Label[]>(MOCK_LABELS);
+    const {
+        projects,
+        isLoading: projectsLoading,
+        error: projectsError,
+        createProject,
+        deleteProject,
+    } = useProjects();
+    const {
+        labels,
+        isLoading: labelsLoading,
+        error: labelsError,
+        createLabel,
+        deleteLabel,
+    } = useLabels();
+    const { users, isLoading: usersLoading, error: usersError } = useUsers();
 
     const [showCreateProject, setShowCreateProject] = useState(false);
     const [showDeleteProject, setShowDeleteProject] = useState(false);
@@ -43,164 +48,151 @@ export function BoardPage() {
     const currentProjectId = projectId ? Number(projectId) : null;
     const currentProject =
         projects.find((project) => project.id === currentProjectId) ?? null;
-    const tasks = currentProjectId
-        ? (tasksByProject[currentProjectId] ?? [])
-        : [];
+
+    const { tasks, setTasks, createTask, updateTask, deleteTask } =
+        useTasks(currentProjectId);
+
     const openTask = tasks.find((task) => task.id === openTaskId) ?? null;
     const labelPickerTask =
         tasks.find((task) => task.id === labelPickerTaskId) ?? null;
 
     useEffect(() => {
-        if (!projectId && projects.length > 0) {
+        if (!projectsLoading && !projectId && projects.length > 0) {
             void navigate(`/projects/${projects[0].id}`, { replace: true });
         }
-    }, [projectId, projects, navigate]);
+    }, [projectId, projects, projectsLoading, navigate]);
 
-    const updateCurrentProjectTasks = (updater: (tasks: Task[]) => Task[]) => {
-        if (!currentProjectId) return;
-        setTasksByProject((prev) => ({
-            ...prev,
-            [currentProjectId]: updater(prev[currentProjectId] ?? []),
-        }));
+    useEffect(() => {
+        const loadError = projectsError || labelsError || usersError;
+        if (loadError) addToast("error", loadError);
+    }, [projectsError, labelsError, usersError, addToast]);
+
+    if (projectsLoading || labelsLoading || usersLoading) {
+        return <FullPageSpinner />;
+    }
+
+    const handleCreateProject = async (name: string) => {
+        if (!user) return;
+        try {
+            const project = await createProject(name, user.id);
+            setShowCreateProject(false);
+            void navigate(`/projects/${project.id}`);
+        } catch {
+            addToast("error", "Unable to create project.");
+        }
     };
 
-    const handleCreateProject = (name: string) => {
-        const nextId =
-            Math.max(0, ...projects.map((project) => project.id)) + 1;
-        const newProject: Project = {
-            id: nextId,
-            name,
-            created_at: new Date().toISOString(),
-            owner: user?.username ?? "you",
-            owner_email: user?.email ?? "",
-        };
-        setProjects((prev) => [...prev, newProject]);
-        setTasksByProject((prev) => ({ ...prev, [nextId]: [] }));
-        setShowCreateProject(false);
-        void navigate(`/projects/${nextId}`);
-    };
-
-    const handleConfirmDeleteProject = () => {
+    const handleConfirmDeleteProject = async () => {
         if (!currentProject) return;
-        const remaining = projects.filter(
-            (project) => project.id !== currentProject.id,
-        );
-        setProjects(remaining);
-        setShowDeleteProject(false);
-        addToast("success", "Project deleted.");
-        void navigate(
-            remaining[0] ? `/projects/${remaining[0].id}` : "/projects",
-            { replace: true },
-        );
+        try {
+            await deleteProject(currentProject.id);
+            setShowDeleteProject(false);
+            addToast("success", "Project deleted.");
+            const remaining = projects.filter(
+                (project) => project.id !== currentProject.id,
+            );
+            void navigate(
+                remaining[0] ? `/projects/${remaining[0].id}` : "/projects",
+                { replace: true },
+            );
+        } catch {
+            addToast("error", "Unable to delete project.");
+        }
     };
 
-    const handleAddTask = (name: string) => {
-        if (!currentProjectId) return;
-        const allTasks = Object.values(tasksByProject).flat();
-        const nextId = Math.max(0, ...allTasks.map((task) => task.id)) + 1;
-        const now = new Date().toISOString();
-        const newTask: Task = {
-            id: nextId,
-            name,
-            description: "",
-            status: "to_do",
-            project_id: currentProjectId,
-            assigned_to_user_id: null,
-            created_at: now,
-            updated_at: now,
-            labels: [],
-        };
-        updateCurrentProjectTasks((current) => [...current, newTask]);
+    const handleAddTask = async (name: string) => {
+        try {
+            await createTask({
+                name,
+                description: "No description yet.",
+                status: "to_do",
+            });
+        } catch {
+            addToast("error", "Unable to create task.");
+        }
     };
 
-    const patchOpenTask = (patch: Partial<Task>) => {
+    const patchOpenTask = async (patch: Parameters<typeof updateTask>[1]) => {
         if (openTaskId === null) return;
-        updateCurrentProjectTasks((current) =>
-            current.map((task) =>
-                task.id === openTaskId
-                    ? {
-                          ...task,
-                          ...patch,
-                          updated_at: new Date().toISOString(),
-                      }
-                    : task,
-            ),
-        );
+        try {
+            await updateTask(openTaskId, patch);
+        } catch {
+            addToast("error", "Unable to update task.");
+        }
     };
 
-    const handleRemoveLabelFromTask = (taskId: number, labelId: number) => {
-        updateCurrentProjectTasks((current) =>
-            current.map((task) =>
-                task.id === taskId
-                    ? {
-                          ...task,
-                          labels: task.labels.filter(
-                              (label) => label.id !== labelId,
-                          ),
-                      }
-                    : task,
-            ),
-        );
+    const handleRemoveLabelFromTask = async (
+        taskId: number,
+        labelId: number,
+    ) => {
+        const task = tasks.find((candidate) => candidate.id === taskId);
+        if (!task) return;
+        const labelIds = task.labels
+            .filter((label) => label.id !== labelId)
+            .map((label) => label.id);
+        try {
+            await updateTask(taskId, { labelIds });
+        } catch {
+            addToast("error", "Unable to remove label.");
+        }
     };
 
-    const handleDeleteOpenTask = () => {
+    const handleDeleteOpenTask = async () => {
         if (openTaskId === null) return;
-        updateCurrentProjectTasks((current) =>
-            current.filter((task) => task.id !== openTaskId),
-        );
-        setOpenTaskId(null);
-        addToast("success", "Task deleted.");
+        try {
+            await deleteTask(openTaskId);
+            setOpenTaskId(null);
+            addToast("success", "Task deleted.");
+        } catch {
+            addToast("error", "Unable to delete task.");
+        }
     };
 
-    const handleToggleLabelOnPickerTask = (labelId: number) => {
+    const handleToggleLabelOnPickerTask = async (labelId: number) => {
         if (labelPickerTaskId === null) return;
-        updateCurrentProjectTasks((current) =>
-            current.map((task) => {
-                if (task.id !== labelPickerTaskId) return task;
-                const alreadyHas = task.labels.some(
-                    (label) => label.id === labelId,
-                );
-                if (alreadyHas) {
-                    return {
-                        ...task,
-                        labels: task.labels.filter(
-                            (label) => label.id !== labelId,
-                        ),
-                    };
-                }
-                const label = labels.find(
-                    (candidate) => candidate.id === labelId,
-                );
-                return label
-                    ? { ...task, labels: [...task.labels, label] }
-                    : task;
-            }),
+        const task = tasks.find(
+            (candidate) => candidate.id === labelPickerTaskId,
         );
+        if (!task) return;
+        const alreadyHas = task.labels.some((label) => label.id === labelId);
+        const labelIds = alreadyHas
+            ? task.labels
+                  .filter((label) => label.id !== labelId)
+                  .map((label) => label.id)
+            : [...task.labels.map((label) => label.id), labelId];
+        try {
+            await updateTask(labelPickerTaskId, { labelIds });
+        } catch {
+            addToast("error", "Unable to update labels.");
+        }
     };
 
-    const handleDeleteGlobalLabel = (labelId: number) => {
-        setLabels((prev) => prev.filter((label) => label.id !== labelId));
-        setTasksByProject((prev) =>
-            Object.fromEntries(
-                Object.entries(prev).map(([id, projectTasks]) => [
-                    id,
-                    projectTasks.map((task) => ({
-                        ...task,
-                        labels: task.labels.filter(
-                            (label) => label.id !== labelId,
-                        ),
-                    })),
-                ]),
-            ),
-        );
+    const handleDeleteGlobalLabel = async (labelId: number) => {
+        try {
+            await deleteLabel(labelId);
+            setTasks((prev) =>
+                prev.map((task) => ({
+                    ...task,
+                    labels: task.labels.filter((label) => label.id !== labelId),
+                })),
+            );
+        } catch {
+            addToast("error", "Unable to delete label.");
+        }
     };
 
-    const handleCreateLabel = (name: string, color: string) => {
-        const nextId = Math.max(0, ...labels.map((label) => label.id)) + 1;
-        setLabels((prev) => [...prev, { id: nextId, name, color }]);
+    const handleCreateLabel = async (name: string, color: string) => {
+        try {
+            await createLabel(name, color);
+        } catch {
+            addToast("error", "Unable to create label.");
+        }
     };
 
-    const assigneeOptions = user ? [{ id: user.id, name: user.username }] : [];
+    const assigneeOptions = users.map((candidate) => ({
+        id: candidate.id,
+        name: candidate.username,
+    }));
 
     return (
         <div className="board-page">
@@ -226,15 +218,17 @@ export function BoardPage() {
                     tasks={tasks}
                     onOpenTask={setOpenTaskId}
                     onOpenLabelPicker={setLabelPickerTaskId}
-                    onRemoveLabel={handleRemoveLabelFromTask}
-                    onAddTask={handleAddTask}
+                    onRemoveLabel={(taskId, labelId) =>
+                        void handleRemoveLabelFromTask(taskId, labelId)
+                    }
+                    onAddTask={(name) => void handleAddTask(name)}
                 />
             )}
 
             <CreateProjectDialog
                 open={showCreateProject}
                 onOpenChange={setShowCreateProject}
-                onCreate={handleCreateProject}
+                onCreate={(name) => void handleCreateProject(name)}
             />
 
             {currentProject && (
@@ -242,31 +236,26 @@ export function BoardPage() {
                     open={showDeleteProject}
                     onOpenChange={setShowDeleteProject}
                     projectName={currentProject.name}
-                    onConfirm={handleConfirmDeleteProject}
+                    onConfirm={() => void handleConfirmDeleteProject()}
                 />
             )}
 
             <TaskDetailDialog
+                key={openTask?.id ?? "closed"}
                 task={openTask}
                 assigneeOptions={assigneeOptions}
                 onOpenChange={(open) => {
                     if (!open) setOpenTaskId(null);
                 }}
-                onNameChange={(name) => patchOpenTask({ name })}
-                onDescriptionChange={(description) =>
-                    patchOpenTask({ description })
-                }
-                onAssigneeChange={(assigneeId) =>
-                    patchOpenTask({ assigned_to_user_id: assigneeId })
-                }
+                onSave={(patch) => void patchOpenTask(patch)}
                 onOpenLabelPicker={() => {
                     if (openTaskId !== null) setLabelPickerTaskId(openTaskId);
                 }}
                 onRemoveLabel={(labelId) => {
                     if (openTaskId !== null)
-                        handleRemoveLabelFromTask(openTaskId, labelId);
+                        void handleRemoveLabelFromTask(openTaskId, labelId);
                 }}
-                onDelete={handleDeleteOpenTask}
+                onDelete={() => void handleDeleteOpenTask()}
             />
 
             <LabelManagerDialog
@@ -278,9 +267,15 @@ export function BoardPage() {
                 checkedLabelIds={
                     labelPickerTask?.labels.map((label) => label.id) ?? []
                 }
-                onToggleLabel={handleToggleLabelOnPickerTask}
-                onDeleteLabel={handleDeleteGlobalLabel}
-                onCreateLabel={handleCreateLabel}
+                onToggleLabel={(labelId) =>
+                    void handleToggleLabelOnPickerTask(labelId)
+                }
+                onDeleteLabel={(labelId) =>
+                    void handleDeleteGlobalLabel(labelId)
+                }
+                onCreateLabel={(name, color) =>
+                    void handleCreateLabel(name, color)
+                }
             />
         </div>
     );

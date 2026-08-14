@@ -11,13 +11,17 @@ interface AssigneeOption {
     name: string;
 }
 
+export interface TaskDetailPatch {
+    name?: string;
+    description?: string;
+    assigned_to_user_id?: number | null;
+}
+
 interface TaskDetailDialogProps {
     task: Task | null;
     assigneeOptions: AssigneeOption[];
     onOpenChange: (open: boolean) => void;
-    onNameChange: (name: string) => void;
-    onDescriptionChange: (description: string) => void;
-    onAssigneeChange: (userId: number | null) => void;
+    onSave: (patch: TaskDetailPatch) => void;
     onOpenLabelPicker: () => void;
     onRemoveLabel: (labelId: number) => void;
     onDelete: () => void;
@@ -34,14 +38,32 @@ export function TaskDetailDialog({
     task,
     assigneeOptions,
     onOpenChange,
-    onNameChange,
-    onDescriptionChange,
-    onAssigneeChange,
+    onSave,
     onOpenLabelPicker,
     onRemoveLabel,
     onDelete,
 }: TaskDetailDialogProps) {
     const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [name, setName] = useState(task?.name ?? "");
+    const [description, setDescription] = useState(task?.description ?? "");
+    const [assigneeId, setAssigneeId] = useState<number | null>(
+        task?.assigned_to_user_id ?? null,
+    );
+
+    const handleOpenChange = (next: boolean) => {
+        if (!next && task) {
+            const patch: TaskDetailPatch = {};
+            if (name !== task.name) patch.name = name;
+            if (description !== task.description)
+                patch.description = description;
+            if (assigneeId !== task.assigned_to_user_id) {
+                patch.assigned_to_user_id = assigneeId;
+            }
+            if (Object.keys(patch).length > 0) onSave(patch);
+        }
+        onOpenChange(next);
+        if (!next) setConfirmingDelete(false);
+    };
 
     const handleDeleteClick = () => {
         if (!confirmingDelete) {
@@ -53,13 +75,7 @@ export function TaskDetailDialog({
     };
 
     return (
-        <Dialog.Root
-            open={task !== null}
-            onOpenChange={(next) => {
-                onOpenChange(next);
-                if (!next) setConfirmingDelete(false);
-            }}
-        >
+        <Dialog.Root open={task !== null} onOpenChange={handleOpenChange}>
             <Dialog.Portal>
                 <Dialog.Overlay className="modal-overlay" />
                 <Dialog.Content className="modal-content task-detail-dialog">
@@ -68,9 +84,9 @@ export function TaskDetailDialog({
                             <Dialog.Title asChild>
                                 <input
                                     className="task-detail-dialog__title-input"
-                                    value={task.name}
+                                    value={name}
                                     onChange={(event) =>
-                                        onNameChange(event.target.value)
+                                        setName(event.target.value)
                                     }
                                 />
                             </Dialog.Title>
@@ -89,9 +105,9 @@ export function TaskDetailDialog({
                                 id="task-description"
                                 rows={4}
                                 placeholder="Add a description…"
-                                value={task.description}
+                                value={description}
                                 onChange={(event) =>
-                                    onDescriptionChange(event.target.value)
+                                    setDescription(event.target.value)
                                 }
                             />
 
@@ -100,12 +116,12 @@ export function TaskDetailDialog({
                             </span>
                             <Select.Root
                                 value={
-                                    task.assigned_to_user_id !== null
-                                        ? task.assigned_to_user_id.toString()
+                                    assigneeId !== null
+                                        ? assigneeId.toString()
                                         : UNASSIGNED
                                 }
                                 onValueChange={(value) =>
-                                    onAssigneeChange(
+                                    setAssigneeId(
                                         value === UNASSIGNED
                                             ? null
                                             : Number(value),

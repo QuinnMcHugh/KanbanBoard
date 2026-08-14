@@ -13,6 +13,7 @@ import healthRoutes from "./routes/healthRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import taskRoutes from "./routes/taskRoutes";
 import labelRoutes from "./routes/labelRoutes";
+import userRoutes from "./routes/userRoutes";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -65,6 +66,8 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId", taskRoutes);
 
 app.use("/api/labels", labelRoutes);
+
+app.use("/api/users", userRoutes);
 
 app.use(errorHandler);
 
