@@ -120,14 +120,15 @@ Kanban Plan
  - some way of expecting the return type so it doesn't need to be coerced from `any`
  - includes standard headers (content-type: json)
 
--implement modals ⚡️
- - task modal
- - new project modal
- - add label
+-implement modals ✅
 
-- drag and drop between columns
+- drag and drop between columns ✅
 
-- With storybook
+- cut down on api volume (many duplicate calls being issued from different views (i.e. GET /users)) - some cache? ✅
+
+-test app manually and look for bugs / obvious improvements ⚡️
+
+- With storybook ⚡️
  - automated a11y checks: @storybook/addon-a11y 
 - Add eslint to UI project
  - and plugins: eslint-plugin-react-hooks, eslint-plugin-jsx-a11y 

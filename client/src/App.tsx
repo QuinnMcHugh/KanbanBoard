@@ -1,5 +1,6 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
+import { UsersProvider } from "./context/UsersProvider";
 import { ToastProvider } from "./components/ui/ToastProvider";
 import { LoginPage } from "./routes/LoginPage";
 import { SignupPage } from "./routes/SignupPage";
@@ -18,11 +19,19 @@ function App() {
                     </Route>
 
                     <Route element={<RequireAuth />}>
-                        <Route path="/projects" element={<BoardPage />} />
                         <Route
-                            path="/projects/:projectId"
-                            element={<BoardPage />}
-                        />
+                            element={
+                                <UsersProvider>
+                                    <Outlet />
+                                </UsersProvider>
+                            }
+                        >
+                            <Route path="/projects" element={<BoardPage />} />
+                            <Route
+                                path="/projects/:projectId"
+                                element={<BoardPage />}
+                            />
+                        </Route>
                     </Route>
 
                     <Route

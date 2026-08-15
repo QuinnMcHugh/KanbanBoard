@@ -2,11 +2,26 @@
     flex: 1;
     min-width: 260px;
     background: var(--color-surface-muted);
+    border: 2px solid transparent;
     border-radius: var(--radius-lg);
     padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.column--drag-active {
+    border-style: dashed;
+    border-color: var(--color-border-dashed);
+}
+
+.column--drop-over {
+    background: var(--color-accent-subtle);
+    border-style: solid;
+    border-color: var(--color-accent);
 }
 
 .column__header {

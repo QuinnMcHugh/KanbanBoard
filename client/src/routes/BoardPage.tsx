@@ -13,7 +13,8 @@ import { LabelManagerDialog } from "../components/modals/LabelManagerDialog";
 import { useProjects } from "../hooks/useProjects";
 import { useTasks } from "../hooks/useTasks";
 import { useLabels } from "../hooks/useLabels";
-import { useUsers } from "../hooks/useUsers";
+import { useUsers } from "../context/useUsers";
+import type { TaskStatus } from "../types/task";
 import "./BoardPage.css";
 
 export function BoardPage() {
@@ -167,6 +168,27 @@ export function BoardPage() {
         }
     };
 
+    const handleMoveTask = async (taskId: number, newStatus: TaskStatus) => {
+        const task = tasks.find((candidate) => candidate.id === taskId);
+        if (!task || task.status === newStatus) return;
+
+        const previousTasks = tasks;
+        setTasks((prev) =>
+            prev.map((candidate) =>
+                candidate.id === taskId
+                    ? { ...candidate, status: newStatus }
+                    : candidate,
+            ),
+        );
+
+        try {
+            await updateTask(taskId, { status: newStatus });
+        } catch {
+            setTasks(previousTasks);
+            addToast("error", "Unable to move task.");
+        }
+    };
+
     const handleDeleteGlobalLabel = async (labelId: number) => {
         try {
             await deleteLabel(labelId);
@@ -222,6 +244,9 @@ export function BoardPage() {
                         void handleRemoveLabelFromTask(taskId, labelId)
                     }
                     onAddTask={(name) => void handleAddTask(name)}
+                    onMoveTask={(taskId, status) =>
+                        void handleMoveTask(taskId, status)
+                    }
                 />
             )}
 

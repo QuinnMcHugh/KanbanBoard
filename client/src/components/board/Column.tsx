@@ -1,13 +1,15 @@
 import { useState, type FormEvent } from "react";
+import { useDroppable } from "@dnd-kit/core";
 import type { Task } from "../../types/task";
 import type { ColumnDef } from "./columnDefs";
-import { TaskCard } from "./TaskCard";
+import { DraggableTaskCard } from "./DraggableTaskCard";
 import "./Column.css";
-import { useUsers } from "../../hooks/useUsers";
 
 interface ColumnProps {
     def: ColumnDef;
     tasks: Task[];
+    isDragActive: boolean;
+    usersById: Record<number, string>;
     onOpenTask: (taskId: number) => void;
     onOpenLabelPicker: (taskId: number) => void;
     onRemoveLabel: (taskId: number, labelId: number) => void;
@@ -17,6 +19,8 @@ interface ColumnProps {
 export function Column({
     def,
     tasks,
+    isDragActive,
+    usersById,
     onOpenTask,
     onOpenLabelPicker,
     onRemoveLabel,
@@ -25,7 +29,7 @@ export function Column({
     const [isAdding, setIsAdding] = useState(false);
     const [newTaskName, setNewTaskName] = useState("");
 
-    const { usersById } = useUsers()
+    const { setNodeRef, isOver } = useDroppable({ id: def.status });
 
     const cancelAdding = () => {
         setIsAdding(false);
@@ -43,8 +47,16 @@ export function Column({
         cancelAdding();
     };
 
+    const columnClassName = [
+        "column",
+        isDragActive && "column--drag-active",
+        isOver && "column--drop-over",
+    ]
+        .filter(Boolean)
+        .join(" ");
+
     return (
-        <div className="column">
+        <div ref={setNodeRef} className={columnClassName}>
             <div className="column__header">
                 <span
                     className="column__dot"
@@ -82,10 +94,14 @@ export function Column({
 
             <div className="column__tasks">
                 {tasks.map((task) => (
-                    <TaskCard
+                    <DraggableTaskCard
                         key={task.id}
                         task={task}
-                        assigneeName={usersById[task.assigned_to_user_id]}
+                        assigneeName={
+                            task.assigned_to_user_id !== null
+                                ? usersById[task.assigned_to_user_id]
+                                : undefined
+                        }
                         onOpen={() => onOpenTask(task.id)}
                         onOpenLabelPicker={() => onOpenLabelPicker(task.id)}
                         onRemoveLabel={(labelId) =>

@@ -1,0 +1,8 @@
+.draggable-task-card {
+    cursor: grab;
+    touch-action: none;
+}
+
+.draggable-task-card--dragging {
+    opacity: 0.4;
+}

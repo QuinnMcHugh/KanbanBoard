@@ -11,3 +11,13 @@
     max-width: 1280px;
     margin: 0 auto;
 }
+
+.task-card-overlay {
+    width: 260px;
+    cursor: grabbing;
+    transform: rotate(2deg);
+}
+
+.task-card-overlay .task-card {
+    box-shadow: var(--shadow-md);
+}
