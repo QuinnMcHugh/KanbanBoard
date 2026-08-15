@@ -14,12 +14,18 @@ const SWATCH_COLORS = [
     "#ec4899",
 ];
 
+function sameLabelIds(a: number[], b: number[]): boolean {
+    if (a.length !== b.length) return false;
+    const setB = new Set(b);
+    return a.every((id) => setB.has(id));
+}
+
 interface LabelManagerDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     labels: Label[];
     checkedLabelIds: number[];
-    onToggleLabel: (labelId: number) => void;
+    onSave: (labelIds: number[]) => void;
     onDeleteLabel: (labelId: number) => void;
     onCreateLabel: (name: string, color: string) => void;
 }
@@ -29,12 +35,13 @@ export function LabelManagerDialog({
     onOpenChange,
     labels,
     checkedLabelIds,
-    onToggleLabel,
+    onSave,
     onDeleteLabel,
     onCreateLabel,
 }: LabelManagerDialogProps) {
     const [newName, setNewName] = useState("");
     const [selectedColor, setSelectedColor] = useState(SWATCH_COLORS[0]);
+    const [checkedIds, setCheckedIds] = useState<number[]>(checkedLabelIds);
 
     const handleAdd = () => {
         const name = newName.trim();
@@ -43,8 +50,29 @@ export function LabelManagerDialog({
         setNewName("");
     };
 
+    const handleToggleCheckbox = (labelId: number) => {
+        setCheckedIds((prev) =>
+            prev.includes(labelId)
+                ? prev.filter((id) => id !== labelId)
+                : [...prev, labelId],
+        );
+    };
+
+    const handleOpenChange = (next: boolean) => {
+        if (!next) {
+            // Drop any ids for labels deleted globally while this modal was open.
+            const validIds = checkedIds.filter((id) =>
+                labels.some((label) => label.id === id),
+            );
+            if (!sameLabelIds(validIds, checkedLabelIds)) {
+                onSave(validIds);
+            }
+        }
+        onOpenChange(next);
+    };
+
     return (
-        <Dialog.Root open={open} onOpenChange={onOpenChange}>
+        <Dialog.Root open={open} onOpenChange={handleOpenChange}>
             <Dialog.Portal>
                 <Dialog.Overlay className="modal-overlay" />
                 <Dialog.Content className="modal-content label-manager-dialog">
@@ -64,9 +92,9 @@ export function LabelManagerDialog({
                             >
                                 <Checkbox.Root
                                     className="label-manager-dialog__checkbox"
-                                    checked={checkedLabelIds.includes(label.id)}
+                                    checked={checkedIds.includes(label.id)}
                                     onCheckedChange={() =>
-                                        onToggleLabel(label.id)
+                                        handleToggleCheckbox(label.id)
                                     }
                                 >
                                     <Checkbox.Indicator>✓</Checkbox.Indicator>

@@ -149,18 +149,8 @@ export function BoardPage() {
         }
     };
 
-    const handleToggleLabelOnPickerTask = async (labelId: number) => {
+    const handleSaveTaskLabels = async (labelIds: number[]) => {
         if (labelPickerTaskId === null) return;
-        const task = tasks.find(
-            (candidate) => candidate.id === labelPickerTaskId,
-        );
-        if (!task) return;
-        const alreadyHas = task.labels.some((label) => label.id === labelId);
-        const labelIds = alreadyHas
-            ? task.labels
-                  .filter((label) => label.id !== labelId)
-                  .map((label) => label.id)
-            : [...task.labels.map((label) => label.id), labelId];
         try {
             await updateTask(labelPickerTaskId, { labelIds });
         } catch {
@@ -284,6 +274,7 @@ export function BoardPage() {
             />
 
             <LabelManagerDialog
+                key={labelPickerTaskId ?? "closed"}
                 open={labelPickerTaskId !== null}
                 onOpenChange={(open) => {
                     if (!open) setLabelPickerTaskId(null);
@@ -292,9 +283,7 @@ export function BoardPage() {
                 checkedLabelIds={
                     labelPickerTask?.labels.map((label) => label.id) ?? []
                 }
-                onToggleLabel={(labelId) =>
-                    void handleToggleLabelOnPickerTask(labelId)
-                }
+                onSave={(labelIds) => void handleSaveTaskLabels(labelIds)}
                 onDeleteLabel={(labelId) =>
                     void handleDeleteGlobalLabel(labelId)
                 }
