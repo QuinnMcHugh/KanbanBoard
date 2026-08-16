@@ -8,17 +8,16 @@ import {
 import { AuthContext, type AuthContextValue } from "./authContext";
 import type { User } from "../types/user";
 import { getMe } from "../api/auth";
-
-export const JWT_TOKEN_KEY = "jwt_token";
+import { JWT_TOKEN_KEY } from "../lib/const";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [token, _setToken] = useState<string | null>(null);
     const [isInitializing, setIsInitializing] = useState<boolean>(true);
 
-    const setToken = useCallback((_token) => {
+    const setToken = useCallback((_token: string | null) => {
         _setToken(_token);
-        window.localStorage.setItem(JWT_TOKEN_KEY, _token);
+        window.localStorage.setItem(JWT_TOKEN_KEY, String(_token));
     }, []);
 
     useEffect(() => {

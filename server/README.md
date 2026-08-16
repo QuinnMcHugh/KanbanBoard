@@ -53,6 +53,8 @@ The server starts on `http://localhost:5001` (configurable via `PORT`).
 | Command | What it does |
 |---|---|
 | `npm run dev` | Start the dev server (`tsx watch`, auto-restarts on file changes) |
+| `npm run build` | Type-check the project (`tsc --noEmit`) — no compiled output. `moduleResolution: "bundler"` and extensionless relative imports mean this project isn't currently set up to emit runnable plain-Node JS; `start` runs the TypeScript directly via `tsx` instead, same as `dev`. |
+| `npm start` | Run the server for production (`tsx src/server.ts`, no watch/hot-reload). Requires migrations to have already been applied — see below. |
 | `npm test` | Run the full test suite once (Vitest) |
 | `npm run test:watch` | Run tests in watch mode |
 

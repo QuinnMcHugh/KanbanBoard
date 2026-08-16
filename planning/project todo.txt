@@ -128,12 +128,12 @@ Kanban Plan
 
 -test app manually and look for bugs / obvious improvements ⚡️
 
+- Implement some rudimentary code splitting 
+ - No code splitting — single ~420KB JS bundle (132KB gzip), no React.lazy(), no manualChunks. Not urgent at this size, but the standard next lever (e.g., the dnd-kit/board bundle doesn't need to load for someone sitting on /login).
 - With storybook ⚡️
  - automated a11y checks: @storybook/addon-a11y 
 - Add eslint to UI project
  - and plugins: eslint-plugin-react-hooks, eslint-plugin-jsx-a11y 
-- React Router
-- @dnd-kit for drag and drop
 - Add vitest tests
  - RTL for component tests
  - Playwright for e2e tests 
@@ -146,9 +146,17 @@ Kanban Plan
 - Ask AI to look at this project through an interviewer's lens and critique it, ask follow-up questions, suggest further features/improvements
 - Create prod knex config - close other prod-readiness gaps
 - Deploy to Render and test in prod
+ - figure out how to do this with a node server and a frontend
 - Create a free Sqlite DB with Turso and connect to that for production usage
 - Write a post about this on my personal site
+- Create a nice README for the overall project and explain it's purpose, how to run it, and what I learned from it 
 
 
 Notes
 - Have AI review my work after each stage for tips and industry standard guidance
+
+
+interviewer questions / topics to explore
+- how would you do RBAC (or an authorization model)? i.e. I only want people who are owners of projects to be able to delete them, etc.
+- what does this mean?
+ - No indexes beyond PKs/uniques — nothing on projects.owner_id, tasks.project_id, tasks.assigned_to_user_id, or the task_labels join columns. Every filter/join there is a full table scan today.

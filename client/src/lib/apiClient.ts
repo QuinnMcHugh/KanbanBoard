@@ -1,4 +1,12 @@
-import { JWT_TOKEN_KEY } from "../api/auth";
+import { JWT_TOKEN_KEY } from "./const";
+
+// Unset in dev: requests stay relative and are proxied by Vite (see vite.config.ts).
+// Set at build time for any deploy where the client isn't served same-origin with the API.
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+
+export function apiUrl(path: string): string {
+    return `${API_BASE_URL}${path}`;
+}
 
 export const HttpMethod = {
     GET: "GET",
@@ -19,7 +27,7 @@ export async function apiRequest<T>(
 ): Promise<T> {
     const token = window.localStorage.getItem(JWT_TOKEN_KEY);
 
-    const response = await fetch(path, {
+    const response = await fetch(apiUrl(path), {
         ...options,
         headers: {
             "Content-Type": "application/json",

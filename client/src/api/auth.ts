@@ -1,7 +1,6 @@
 import type { ApiErrorResponse, AuthSuccessResponse } from "../types/auth";
-import { HttpMethod } from "../lib/apiClient";
-
-export const JWT_TOKEN_KEY = "jwt_token";
+import { apiUrl, HttpMethod } from "../lib/apiClient";
+import { JWT_TOKEN_KEY } from "../lib/const";
 
 export interface CheckSignUpResponse {
     message: string;
@@ -11,7 +10,7 @@ export async function checkAreCredentialsAvailable(
     username: string,
     email: string,
 ): Promise<CheckSignUpResponse> {
-    const response = await fetch("/api/auth/checkSignup", {
+    const response = await fetch(apiUrl("/api/auth/checkSignup"), {
         method: HttpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -32,7 +31,7 @@ export async function signup(
     email: string,
     username: string,
 ) {
-    const response = await fetch("/api/auth/signup", {
+    const response = await fetch(apiUrl("/api/auth/signup"), {
         method: HttpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -47,7 +46,7 @@ export async function signup(
 }
 
 export async function login(password: string, email: string) {
-    const response = await fetch("/api/auth/login", {
+    const response = await fetch(apiUrl("/api/auth/login"), {
         method: HttpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password, email }),
@@ -59,7 +58,7 @@ export async function login(password: string, email: string) {
 
 export async function getMe() {
     const localStorageToken = window.localStorage.getItem(JWT_TOKEN_KEY);
-    const response = await fetch("/api/auth/me", {
+    const response = await fetch(apiUrl("/api/auth/me"), {
         method: HttpMethod.GET,
         headers: {
             Authorization: `Bearer ${localStorageToken}`,
