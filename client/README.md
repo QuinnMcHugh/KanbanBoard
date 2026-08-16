@@ -46,16 +46,35 @@ needed — Vite's dev server proxies `/api/*` requests to `http://localhost:5001
 `.env`/`.env.local` are gitignored. Copy `.env.example` to `.env` and fill in real values if you
 need to point a build at a non-default API URL.
 
+## Storybook
+
+A dev-only Storybook instance showcases every component and route in isolation, with mock data
+instead of a live backend.
+
+```bash
+npm run storybook
+```
+
+Starts on `http://localhost:6006`. `npm run build-storybook` produces a static export (into
+`storybook-static/`, gitignored) if you want to check that everything actually builds.
+
+Story files (`*.stories.tsx`) live colocated next to the component they cover. Shared mock data
+and decorators (fake auth/users context, a `window.fetch` stub for the few components that call
+real data-fetching hooks, a `MemoryRouter` wrapper, a `DndContext` wrapper) live in `src/mocks/`.
+Storybook is dev-only tooling — `tsconfig.app.json` excludes `*.stories.tsx` from the production
+type-check/build (`npm run build`), so nothing here ships or gates a real deploy.
+
 ## Project structure
 
 ```
 src/
-├── api/          # Thin fetch wrappers per backend resource 
+├── api/          # Thin fetch wrappers per backend resource
 ├── components/   
 ├── context/      # React Context providers
-├── hooks/        # Per-resource data hooks
+├── hooks/        # Per-resource data hooksbuilt on api/
 ├── lib/          # Shared client-side utilities
-├── routes/       # Top-level route components 
-├── styles/       classes
-└── types/        
+├── mocks/        # Storybook-only fixtures/decorators
+├── routes/       
+├── styles/       
+└── types/        # TypeScript types mirroring the server's Zod schemas
 ```

@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -33,6 +36,15 @@ export default tseslint.config(
         ...tseslint.configs.disableTypeChecked,
     },
     {
+        // Story files are excluded from tsconfig.app.json (kept out of the
+        // production build/typecheck gate — see tsconfig.storybook.json for
+        // their standalone typecheck), so they're outside the app's tsconfig
+        // project and can't use type-aware rules here either.
+        files: [".storybook/**", "src/**/*.stories.tsx"],
+        ...tseslint.configs.disableTypeChecked,
+    },
+    {
         ignores: ["dist/**", "node_modules/**"],
     },
+    storybook.configs["flat/recommended"]
 );

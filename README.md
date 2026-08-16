@@ -46,6 +46,10 @@ npm run dev
 Runs on `http://localhost:5173` (or the next free port). No env setup needed locally — Vite's
 dev server proxies `/api/*` requests to `http://localhost:5001` (see `client/vite.config.ts`).
 
+A dev-only Storybook instance showcasing every client component/route is also available —
+`npm run storybook` from `client/` (see
+[`client/README.md#storybook`](client/README.md#storybook)).
+
 ## Tech stack at a glance
 
 - **Server**: Node.js, TypeScript (`tsx`), Express 5, Knex.js + SQLite, Zod validation,
