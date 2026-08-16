@@ -1,12 +1,14 @@
 import type { Request, Response } from "express";
 import db from "../db/db";
 import type { Knex } from "knex";
-import type { CreateProjectInput, UpdateProjectInput } from "../schemas/projectSchemas";
+import type { CreateProjectInput, ProjectRow, UpdateProjectInput } from "../schemas/projectSchemas";
 import { NotFoundError } from "../errors";
 
 function projectsJoinedWithUsers(queryBuilder: Knex | Knex.Transaction = db) {
     return queryBuilder("projects")
-        .select(
+        // Aliased columns ("x as y") aren't inferrable from the Tables type, so the result
+        // shape is given explicitly — it matches projectSchema exactly (see projectSchemas.ts).
+        .select<ProjectRow[]>(
             'email as owner_email',
             'username as owner',
             'projects.id',
@@ -37,7 +39,7 @@ export async function getProject(req: Request<{ id: string }>, res: Response): P
     });
 };
 
-export async function createProject(req: Request<Record<string, never>, any, CreateProjectInput>, res: Response): Promise<void> {
+export async function createProject(req: Request<Record<string, never>, unknown, CreateProjectInput>, res: Response): Promise<void> {
     const { name, owner_id } = req.body;
 
     const createdProject = await db("projects")
@@ -55,7 +57,7 @@ export async function createProject(req: Request<Record<string, never>, any, Cre
     });
 }
 
-export async function updateProject(req: Request<{ id: string }, any, UpdateProjectInput>, res: Response): Promise<void> {
+export async function updateProject(req: Request<{ id: string }, unknown, UpdateProjectInput>, res: Response): Promise<void> {
     const id = Number(req.params.id);
     const { name, owner_id } = req.body;
 

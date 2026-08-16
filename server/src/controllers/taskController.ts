@@ -1,12 +1,19 @@
 import type { Request, Response } from "express";
 import db from "../db/db";
 import type { Knex } from "knex";
-import type { CreateTaskInput, UpdateTaskInput } from "../schemas/taskSchemas";
+import type { CreateTaskInput, Task, UpdateTaskInput } from "../schemas/taskSchemas";
+import type { Label } from "../schemas/labelSchemas";
 import { BadRequestError, NotFoundError } from "../errors";
+
+// What a row from tasksWithLabels() actually looks like: `labels` is the raw JSON text
+// produced by the json_group_array() below, not yet parsed into Label[] (see parseTaskLabels).
+type TaskRow = Omit<Task, "labels"> & { labels: string };
 
 function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
     return queryBuilder("tasks")
-        .select(
+        // "tasks.*" plus a raw computed column aren't inferrable from the Tables type, so
+        // the result shape is given explicitly.
+        .select<TaskRow[]>(
             "tasks.*",
             db.raw(`(
                 SELECT COALESCE(json_group_array(json_object('id', labels.id, 'name', labels.name, 'color', labels.color)), '[]')
@@ -16,6 +23,10 @@ function tasksWithLabels(queryBuilder: Knex | Knex.Transaction = db) {
                 ) as labels`
             )
         );
+}
+
+function parseTaskLabels(row: TaskRow): Task {
+    return { ...row, labels: JSON.parse(row.labels) as Label[] };
 }
 
 async function assertUserIdExists(queryBuilder: Knex | Knex.Transaction = db, assigned_to_user_id: number | null | undefined): Promise<void> {
@@ -79,12 +90,10 @@ export async function getTasks(req: Request<{ projectId: string }>, res: Respons
     await assertProjectExists(req);
     const project_id = Number(req.params.projectId);
 
-    const tasks = await tasksWithLabels()
+    const rows = await tasksWithLabels()
         .where('tasks.project_id', project_id);
 
-    tasks.forEach(task => {
-        task.labels = JSON.parse(task.labels);
-    });
+    const tasks = rows.map(parseTaskLabels);
 
     res.status(200).json({
         tasks,
@@ -97,23 +106,23 @@ export async function getTask(req: Request<{ id: string; projectId: string }>, r
 
     await assertProjectExists(req);
 
-    const task = await tasksWithLabels()
+    const row = await tasksWithLabels()
         .where('tasks.id', taskId)
         .andWhere('tasks.project_id', projectId)
         .first();
 
-    if (!task) {
+    if (!row) {
         throw new NotFoundError('Could not find task.');
     }
 
-    task.labels = JSON.parse(task.labels);
+    const task = parseTaskLabels(row);
 
     res.status(200).json({
         task,
     });
 }
 
-export async function createTask(req: Request<{ projectId: string }, any, CreateTaskInput>, res: Response): Promise<void> {
+export async function createTask(req: Request<{ projectId: string }, unknown, CreateTaskInput>, res: Response): Promise<void> {
     await assertProjectExists(req);
 
     const projectId = Number(req.params.projectId);
@@ -135,12 +144,12 @@ export async function createTask(req: Request<{ projectId: string }, any, Create
 
         await createTaskLabelsRecords(trx, labelIds, newTaskId);
 
-        const result = await tasksWithLabels(trx)
+        // Guaranteed to exist — just inserted, in the same transaction.
+        const result = (await tasksWithLabels(trx)
             .where('tasks.id', newTaskId)
-            .first();
+            .first())!;
 
-        result.labels = JSON.parse(result.labels);
-        return result;
+        return parseTaskLabels(result);
     });
 
     res.status(201).json({
@@ -166,17 +175,15 @@ export async function deleteTask(req: Request<{ id: string; projectId: string }>
 
         await trx("tasks").where({ id: taskId }).delete();
 
-        return found;
+        return parseTaskLabels(found);
     });
-
-    task.labels = JSON.parse(task.labels);
 
     res.status(200).json({
         task,
     });
 }
 
-export async function updateTask(req: Request<{ id: string; projectId: string }, any, UpdateTaskInput>, res: Response): Promise<void> {
+export async function updateTask(req: Request<{ id: string; projectId: string }, unknown, UpdateTaskInput>, res: Response): Promise<void> {
     await assertProjectExists(req);
 
     const projectId = Number(req.params.projectId);
@@ -212,12 +219,12 @@ export async function updateTask(req: Request<{ id: string; projectId: string },
             await createTaskLabelsRecords(trx, labelIds, newTaskId);
         }
 
-        const result = await tasksWithLabels(trx)
+        // Guaranteed to exist — just updated, in the same transaction.
+        const result = (await tasksWithLabels(trx)
             .where('tasks.id', newTaskId)
-            .first();
+            .first())!;
 
-        result.labels = JSON.parse(result.labels);
-        return result;
+        return parseTaskLabels(result);
     });
 
     res.status(200).json({

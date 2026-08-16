@@ -84,3 +84,4 @@ export const taskListResponseSchema = z
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
+export type Task = z.infer<typeof taskSchema>;

@@ -128,9 +128,9 @@ Kanban Plan
 
 -test app manually and look for bugs / obvious improvements ⚡️
 
+- With storybook ⚡️
 - Implement some rudimentary code splitting 
  - No code splitting — single ~420KB JS bundle (132KB gzip), no React.lazy(), no manualChunks. Not urgent at this size, but the standard next lever (e.g., the dnd-kit/board bundle doesn't need to load for someone sitting on /login).
-- With storybook ⚡️
  - automated a11y checks: @storybook/addon-a11y 
 - Add eslint to UI project
  - and plugins: eslint-plugin-react-hooks, eslint-plugin-jsx-a11y 
@@ -156,7 +156,7 @@ Notes
 - Have AI review my work after each stage for tips and industry standard guidance
 
 
-interviewer questions / topics to explore
+interviewer questions / topics to explore ⚡️
 - how would you do RBAC (or an authorization model)? i.e. I only want people who are owners of projects to be able to delete them, etc.
 - what does this mean?
  - No indexes beyond PKs/uniques — nothing on projects.owner_id, tasks.project_id, tasks.assigned_to_user_id, or the task_labels join columns. Every filter/join there is a full table scan today.

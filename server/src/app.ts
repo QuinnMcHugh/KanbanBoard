@@ -29,7 +29,13 @@ app.use(
     helmet({
         contentSecurityPolicy: {
             directives: {
-                scriptSrc: ["'self'", (req, res: any) => `'nonce-${res.locals.cspNonce}'`],
+                scriptSrc: [
+                    "'self'",
+                    (_req, res) =>
+                        // helmet types `res` as Node's raw ServerResponse, but Express always
+                        // invokes this hook with its own Response (which has `.locals`).
+                        `'nonce-${(res as express.Response).locals.cspNonce}'`,
+                ],
             },
         },
     })
@@ -38,7 +44,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(pinoHttp({ logger }));
 app.use((req, res, next) => {
-    res.setHeader("X-Request-Id", String(req.id));
+    // pino-http types req.id as `string | number | object`, but this app doesn't set a
+    // custom genReqId, so it's always a string or the library's incrementing number id.
+    const requestId =
+        typeof req.id === "object" ? JSON.stringify(req.id) : String(req.id);
+    res.setHeader("X-Request-Id", requestId);
     next();
 });
 

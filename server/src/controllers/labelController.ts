@@ -25,7 +25,7 @@ export async function getLabel(req: Request<{ id: string }>, res: Response): Pro
     });
 }
 
-export async function createLabel(req: Request<Record<string, never>, any, CreateLabelInput>, res: Response): Promise<void> {
+export async function createLabel(req: Request<Record<string, never>, unknown, CreateLabelInput>, res: Response): Promise<void> {
     const { name, color } = req.body;
 
     const createdLabel = await db("labels")
@@ -37,7 +37,7 @@ export async function createLabel(req: Request<Record<string, never>, any, Creat
     });
 }
 
-export async function updateLabel(req: Request<{ id: string }, any, UpdateLabelInput>, res: Response): Promise<void> {
+export async function updateLabel(req: Request<{ id: string }, unknown, UpdateLabelInput>, res: Response): Promise<void> {
     const id = Number(req.params.id);
     const { name, color } = req.body;
 

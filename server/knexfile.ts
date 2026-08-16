@@ -1,4 +1,5 @@
 import type { Knex } from "knex";
+import type { Database } from "sqlite3";
 
 const sharedConfig: Omit<Knex.Config, "connection"> = {
     // Tell Knex we are using SQLite
@@ -10,9 +11,14 @@ const sharedConfig: Omit<Knex.Config, "connection"> = {
 
     // Force SQLite to enforce Foreign Key constraints
     pool: {
-        afterCreate: (conn: any, cb: any) => {
-            conn.run("PRAGMA foreign_keys = ON", cb);
-        }
+        // Knex promisifies this (Node error-first convention) and only awaits it for
+        // completion — the resolved value itself is never used, so `conn` is optional.
+        afterCreate: (
+            conn: Database,
+            done: (err: Error | null, conn?: Database) => void,
+        ) => {
+            conn.run("PRAGMA foreign_keys = ON", done);
+        },
     },
 
     // Tell Knex where to put our generated table schemas and mock data

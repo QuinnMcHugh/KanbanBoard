@@ -8,7 +8,7 @@ import { ConflictError, NotFoundError, UnauthorizedError } from "../errors";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function checkSignupAvailability(req: Request<Record<string, never>, any, CheckSignupAvailabilityInput>, res: Response): Promise<void> {
+export async function checkSignupAvailability(req: Request<Record<string, never>, unknown, CheckSignupAvailabilityInput>, res: Response): Promise<void> {
   const { username, email } = req.body;
 
   const [existingUser] = await db("users").where({ email }).orWhere({ username }).returning(["id", "username", "email"]);
@@ -27,7 +27,7 @@ export async function checkSignupAvailability(req: Request<Record<string, never>
   });
 };
 
-export async function signup(req: Request<Record<string, never>, any, SignupInput>, res: Response): Promise<void> {
+export async function signup(req: Request<Record<string, never>, unknown, SignupInput>, res: Response): Promise<void> {
   const { username, email, password } = req.body;
 
   const saltRounds = 10;
@@ -48,7 +48,7 @@ export async function signup(req: Request<Record<string, never>, any, SignupInpu
   });
 };
 
-export async function login(req: Request<Record<string, never>, any, LoginInput>, res: Response): Promise<void> {
+export async function login(req: Request<Record<string, never>, unknown, LoginInput>, res: Response): Promise<void> {
   const { email, password } = req.body;
 
   const user = await db("users").where({ email }).first();

@@ -50,3 +50,4 @@ export const projectListResponseSchema = z
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+export type ProjectRow = z.infer<typeof projectSchema>;

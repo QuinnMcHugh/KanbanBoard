@@ -48,3 +48,4 @@ export const labelListResponseSchema = z
 
 export type CreateLabelInput = z.infer<typeof createLabelSchema>;
 export type UpdateLabelInput = z.infer<typeof updateLabelSchema>;
+export type Label = z.infer<typeof labelSchema>;
