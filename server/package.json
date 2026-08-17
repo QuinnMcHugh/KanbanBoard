@@ -9,6 +9,8 @@
         "dev": "tsx watch src/server.ts",
         "build": "npm run typecheck",
         "start": "tsx src/server.ts",
+        "start:prod": "knex migrate:latest --knexfile knexfile.ts && knex seed:run --knexfile knexfile.ts && npm run start",
+        "build:prod": "npm install && npm run build",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "typecheck": "tsc --noEmit",

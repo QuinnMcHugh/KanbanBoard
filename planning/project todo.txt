@@ -130,21 +130,16 @@ Kanban Plan
 - Add storybook views ✅
 - Add a top-level error boundary ✅
 - Implement some rudimentary code splitting ✅
-- Add eslint to UI project ⚡️
+- Add eslint to UI project ✅
  - and plugins: eslint-plugin-react-hooks, eslint-plugin-jsx-a11y 
-- Add vitest tests
+- Add vitest tests ⚡️
  - RTL for component tests
  - Playwright for e2e tests 
 
-- Ask AI to stress test the app and look for production-readiness
 
 
-- Ask AI to look at this project through an interviewer's lens and critique it, ask follow-up questions, suggest further features/improvements
-- Create prod knex config - close other prod-readiness gaps
+- Create prod knex config - close other prod-readiness gaps ⚡️
 - Deploy to Render and test in prod
  - figure out how to do this with a node server and a frontend
-- Create a free Sqlite DB with Turso and connect to that for production usage
 - Write a post about this on my personal site
 - Create a nice README for the overall project and explain it's purpose, how to run it, and what I learned from it 
-
-

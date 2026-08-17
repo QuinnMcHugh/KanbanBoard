@@ -46,6 +46,13 @@ const config: Record<string, Knex.Config> = {
             filename: "./src/db/kanban.test.sqlite3",
         },
     },
+
+    production: {
+        ...sharedConfig,
+        connection: {
+            filename: "./src/db/kanban.sqlite3",
+        },
+    },
 }
 
 export default config
