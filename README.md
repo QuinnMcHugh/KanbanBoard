@@ -10,7 +10,7 @@ This is a two-project monorepo — `client/` and `server/` are independent npm p
 
 ## Demo
 
-<video src="[https://github.com](https://github.com/user-attachments/assets/af4d59f2-024c-4c64-a53b-0c7c8ef8571e)" width="100%" controls loop muted></video>
+<video src="https://github.com/user-attachments/assets/af4d59f2-024c-4c64-a53b-0c7c8ef8571e" width="100%" controls loop muted></video>
 
 ## Structure
 
