@@ -1,9 +1,12 @@
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
+import js from "@eslint/js"
+import tseslint from "typescript-eslint"
+import eslintConfigPrettier from "eslint-config-prettier"
 
 export default tseslint.config(
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
+    // Disables any ESLint stylistic rules that could conflict with Prettier.
+    eslintConfigPrettier,
     {
         languageOptions: {
             parserOptions: {
@@ -16,7 +19,10 @@ export default tseslint.config(
             // (err, req, res, next) signature, where `next` must be present for
             // Express to recognize a handler as error-handling middleware even if
             // it's never called.
-            "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                { argsIgnorePattern: "^_" },
+            ],
         },
     },
     {
@@ -57,5 +63,5 @@ export default tseslint.config(
     },
     {
         ignores: ["node_modules/**"],
-    }
-);
+    },
+)

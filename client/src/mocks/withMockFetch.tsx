@@ -1,4 +1,4 @@
-import type { Decorator } from "@storybook/react-vite";
+import type { Decorator } from "@storybook/react-vite"
 
 /**
  * Stubs window.fetch for the duration of a story's render, resolving each URL
@@ -11,32 +11,30 @@ import type { Decorator } from "@storybook/react-vite";
  * silently rendering blank.
  */
 function resolveUrl(input: RequestInfo | URL): string {
-    if (typeof input === "string") return input;
-    if (input instanceof URL) return input.toString();
-    return input.url;
+    if (typeof input === "string") return input
+    if (input instanceof URL) return input.toString()
+    return input.url
 }
 
 export function withMockFetch(responses: Record<string, unknown>): Decorator {
     return (Story) => {
         window.fetch = (input: RequestInfo | URL) => {
-            const url = resolveUrl(input);
+            const url = resolveUrl(input)
 
             if (!(url in responses)) {
                 console.warn(
                     `[withMockFetch] No mock response registered for "${url}". Add it to the story's withMockFetch({...}) map.`,
-                );
+                )
                 return Promise.resolve(
                     new Response(JSON.stringify({ error: "Not mocked." }), {
                         status: 404,
                     }),
-                );
+                )
             }
 
-            return Promise.resolve(
-                new Response(JSON.stringify(responses[url])),
-            );
-        };
+            return Promise.resolve(new Response(JSON.stringify(responses[url])))
+        }
 
-        return <Story />;
-    };
+        return <Story />
+    }
 }

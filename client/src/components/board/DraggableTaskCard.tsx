@@ -1,20 +1,20 @@
-import { useDraggable } from "@dnd-kit/core";
-import type { Task } from "../../types/task";
-import { TaskCard } from "./TaskCard";
-import "./DraggableTaskCard.css";
+import { useDraggable } from "@dnd-kit/core"
+import type { Task } from "../../types/task"
+import { TaskCard } from "./TaskCard"
+import "./DraggableTaskCard.css"
 
 interface DraggableTaskCardProps {
-    task: Task;
-    assigneeName?: string;
-    onOpen: () => void;
-    onOpenLabelPicker: () => void;
-    onRemoveLabel: (labelId: number) => void;
+    task: Task
+    assigneeName?: string
+    onOpen: () => void
+    onOpenLabelPicker: () => void
+    onRemoveLabel: (labelId: number) => void
 }
 
 export function DraggableTaskCard({ task, ...rest }: DraggableTaskCardProps) {
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: task.id,
-    });
+    })
 
     return (
         <div
@@ -29,5 +29,5 @@ export function DraggableTaskCard({ task, ...rest }: DraggableTaskCardProps) {
         >
             <TaskCard task={task} {...rest} />
         </div>
-    );
+    )
 }

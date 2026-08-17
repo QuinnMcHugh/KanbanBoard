@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
-import { LabelManagerDialog } from "./LabelManagerDialog";
-import { labels } from "../../mocks/fixtures";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { fn } from "storybook/test"
+import { LabelManagerDialog } from "./LabelManagerDialog"
+import { labels } from "../../mocks/fixtures"
 
 const meta: Meta<typeof LabelManagerDialog> = {
     component: LabelManagerDialog,
@@ -14,9 +14,9 @@ const meta: Meta<typeof LabelManagerDialog> = {
         onDeleteLabel: fn(),
         onCreateLabel: fn(),
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof LabelManagerDialog>;
+type Story = StoryObj<typeof LabelManagerDialog>
 
-export const Default: Story = {};
+export const Default: Story = {}

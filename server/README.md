@@ -2,7 +2,7 @@
 
 A REST API for a Kanban board — projects, tasks (with status swimlanes and labels), and a global labeling system. Built as a learning project, with an emphasis on getting the backend fundamentals (validation, transactions, auth, testing, docs) right before any frontend exists.
 
-This is the `server/` half of a monorepo; `client/` is where the React half of the monorepo lives. 
+This is the `server/` half of a monorepo; `client/` is where the React half of the monorepo lives.
 
 ## Tech stack
 
@@ -38,25 +38,27 @@ The server starts on `http://localhost:5001` (configurable via `PORT`).
 
 ## Environment variables
 
-| Variable | Required | Default | Notes |
-|---|---|---|---|
-| `JWT_SECRET` | **Yes, always** | — | Server refuses to boot without it (see `src/env.ts`). |
+| Variable               | Required               | Default                                    | Notes                                                                                                                |
+| ---------------------- | ---------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `JWT_SECRET`           | **Yes, always**        | —                                          | Server refuses to boot without it (see `src/env.ts`).                                                                |
 | `CORS_ALLOWED_ORIGINS` | **Yes, in production** | `http://localhost:5173` outside production | Comma-separated list of allowed frontend origins. Server refuses to boot if `NODE_ENV=production` and this is unset. |
-| `PORT` | No | `5001` | |
-| `NODE_ENV` | No | `development` | Set to `test` automatically by the Vitest config; set to `production` for a real deployment. |
-| `LOG_LEVEL` | No | `info` (`silent` when `NODE_ENV=test`) | Any pino level (`trace`/`debug`/`info`/`warn`/`error`/`fatal`/`silent`). |
+| `PORT`                 | No                     | `5001`                                     |                                                                                                                      |
+| `NODE_ENV`             | No                     | `development`                              | Set to `test` automatically by the Vitest config; set to `production` for a real deployment.                         |
+| `LOG_LEVEL`            | No                     | `info` (`silent` when `NODE_ENV=test`)     | Any pino level (`trace`/`debug`/`info`/`warn`/`error`/`fatal`/`silent`).                                             |
 
 `.env` is gitignored. Copy `.env.example` and fill in real values — never commit actual secrets.
 
 ## Available scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the dev server (`tsx watch`, auto-restarts on file changes) |
-| `npm run build` | Type-check the project (`tsc --noEmit`) — no compiled output. `moduleResolution: "bundler"` and extensionless relative imports mean this project isn't currently set up to emit runnable plain-Node JS; `start` runs the TypeScript directly via `tsx` instead, same as `dev`. |
-| `npm start` | Run the server for production (`tsx src/server.ts`, no watch/hot-reload). Requires migrations to have already been applied — see below. |
-| `npm test` | Run the full test suite once (Vitest) |
-| `npm run test:watch` | Run tests in watch mode |
+| Command                | What it does                                                                                                                                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`          | Start the dev server (`tsx watch`, auto-restarts on file changes)                                                                                                                                                                                                              |
+| `npm run build`        | Type-check the project (`tsc --noEmit`) — no compiled output. `moduleResolution: "bundler"` and extensionless relative imports mean this project isn't currently set up to emit runnable plain-Node JS; `start` runs the TypeScript directly via `tsx` instead, same as `dev`. |
+| `npm start`            | Run the server for production (`tsx src/server.ts`, no watch/hot-reload). Requires migrations to have already been applied — see below.                                                                                                                                        |
+| `npm test`             | Run the full test suite once (Vitest)                                                                                                                                                                                                                                          |
+| `npm run test:watch`   | Run tests in watch mode                                                                                                                                                                                                                                                        |
+| `npm run format`       | Prettier, writes changes (4-space indent, no semicolons — see `.prettierrc.json`)                                                                                                                                                                                              |
+| `npm run format:check` | Prettier, check only (no writes)                                                                                                                                                                                                                                               |
 
 ### Database (migrations & seeds)
 
@@ -81,25 +83,26 @@ The test database is migrated and reseeded automatically by the test suite itsel
 ## API documentation
 
 Once the server is running:
+
 - **`GET /docs`** — interactive API reference (Scalar UI)
 - **`GET /openapi.json`** — the raw OpenAPI 3.1 spec, generated at startup from the same Zod schemas that validate requests at runtime
 
-Both are currently public/unauthenticated. 
+Both are currently public/unauthenticated.
 
 ## Project structure
 
 ```
 src/
-├── app.ts                 # Express app construction — middleware, route mounting 
+├── app.ts                 # Express app construction — middleware, route mounting
 ├── server.ts               # Entry point: imports app, calls app.listen()
 ├── env.ts                  # dotenv load + fail-fast checks for required env vars
-├── logger.ts                
-├── corsOptions.ts           
-├── errors.ts                
-├── controllers/            
-├── routes/                 
+├── logger.ts
+├── corsOptions.ts
+├── errors.ts
+├── controllers/
+├── routes/
 ├── schemas/                  # Zod schemas — request validation, response shapes
-├── middleware/               
+├── middleware/
 ├── openapi/                  # Registers every route + schema against zod-to-openapi
 └── db/
     ├── db.ts                 # Knex instance, environment-aware (development/test)
@@ -108,7 +111,7 @@ src/
     └── seeds/
 
 tests/                       # Vitest + Supertest
-knexfile.ts                    
+knexfile.ts
 ```
 
 ## Key design decisions

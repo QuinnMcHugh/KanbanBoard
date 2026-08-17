@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
-import { CreateProjectDialog } from "./CreateProjectDialog";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { fn } from "storybook/test"
+import { CreateProjectDialog } from "./CreateProjectDialog"
 
 const meta: Meta<typeof CreateProjectDialog> = {
     component: CreateProjectDialog,
@@ -9,9 +9,9 @@ const meta: Meta<typeof CreateProjectDialog> = {
         onOpenChange: fn(),
         onCreate: fn(),
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof CreateProjectDialog>;
+type Story = StoryObj<typeof CreateProjectDialog>
 
-export const Default: Story = {};
+export const Default: Story = {}

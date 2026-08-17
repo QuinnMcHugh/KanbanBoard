@@ -1,18 +1,18 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { RequireAuth } from "./RequireAuth";
-import { withMockAuth } from "../../mocks/decorators";
-import { users } from "../../mocks/fixtures";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { MemoryRouter, Route, Routes } from "react-router-dom"
+import { RequireAuth } from "./RequireAuth"
+import { withMockAuth } from "../../mocks/decorators"
+import { users } from "../../mocks/fixtures"
 
 // RequireAuth is a layout route (renders <Outlet/> or redirects), so it's shown here in the
 // same nested-route shape it's actually used in (see App.tsx) rather than as a standalone leaf.
 const meta: Meta<typeof RequireAuth> = {
     component: RequireAuth,
     parameters: { layout: "fullscreen" },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof RequireAuth>;
+type Story = StoryObj<typeof RequireAuth>
 
 export const Authenticated: Story = {
     decorators: [withMockAuth(users[0])],
@@ -30,7 +30,7 @@ export const Authenticated: Story = {
             </Routes>
         </MemoryRouter>
     ),
-};
+}
 
 export const Unauthenticated: Story = {
     decorators: [withMockAuth(null)],
@@ -54,4 +54,4 @@ export const Unauthenticated: Story = {
             </Routes>
         </MemoryRouter>
     ),
-};
+}

@@ -1,5 +1,5 @@
-import type { Decorator } from "@storybook/react-vite";
-import { DndContext } from "@dnd-kit/core";
+import type { Decorator } from "@storybook/react-vite"
+import { DndContext } from "@dnd-kit/core"
 
 /**
  * Minimal DndContext ancestor for stories of components that call dnd-kit
@@ -10,4 +10,4 @@ export const withDndContext: Decorator = (Story) => (
     <DndContext>
         <Story />
     </DndContext>
-);
+)

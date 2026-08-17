@@ -1,10 +1,10 @@
-import { useState, type FormEvent } from "react";
-import { Dialog } from "radix-ui";
+import { useState, type FormEvent } from "react"
+import { Dialog } from "radix-ui"
 
 interface CreateProjectDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onCreate: (name: string) => void;
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    onCreate: (name: string) => void
 }
 
 export function CreateProjectDialog({
@@ -12,31 +12,31 @@ export function CreateProjectDialog({
     onOpenChange,
     onCreate,
 }: CreateProjectDialogProps) {
-    const [name, setName] = useState("");
-    const [error, setError] = useState("");
+    const [name, setName] = useState("")
+    const [error, setError] = useState("")
 
     const reset = () => {
-        setName("");
-        setError("");
-    };
+        setName("")
+        setError("")
+    }
 
     const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        const trimmed = name.trim();
+        event.preventDefault()
+        const trimmed = name.trim()
         if (trimmed.length < 3) {
-            setError("Project name must be at least 3 characters.");
-            return;
+            setError("Project name must be at least 3 characters.")
+            return
         }
-        onCreate(trimmed);
-        reset();
-    };
+        onCreate(trimmed)
+        reset()
+    }
 
     return (
         <Dialog.Root
             open={open}
             onOpenChange={(next) => {
-                onOpenChange(next);
-                if (!next) reset();
+                onOpenChange(next)
+                if (!next) reset()
             }}
         >
             <Dialog.Portal>
@@ -58,12 +58,16 @@ export function CreateProjectDialog({
                             </label>
                             <input
                                 id="new-project-name"
+                                // This dialog only opens in response to a user
+                                // clicking "New Project", so focusing its one field
+                                // is the expected response, not a page-load autofocus.
+                                // eslint-disable-next-line jsx-a11y/no-autofocus
                                 autoFocus
                                 placeholder="e.g. Marketing Site Relaunch"
                                 value={name}
                                 onChange={(event) => {
-                                    setName(event.target.value);
-                                    setError("");
+                                    setName(event.target.value)
+                                    setError("")
                                 }}
                             />
                         </div>
@@ -82,5 +86,5 @@ export function CreateProjectDialog({
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
-    );
+    )
 }

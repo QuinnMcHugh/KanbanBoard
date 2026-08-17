@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { BoardPage } from "./BoardPage";
-import { withMockAuth, withMockUsers, withRouter } from "../mocks/decorators";
-import { withMockFetch } from "../mocks/withMockFetch";
-import { ToastProvider } from "../components/ui/ToastProvider";
-import { projects, tasks, labels, users } from "../mocks/fixtures";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { BoardPage } from "./BoardPage"
+import { withMockAuth, withMockUsers, withRouter } from "../mocks/decorators"
+import { withMockFetch } from "../mocks/withMockFetch"
+import { ToastProvider } from "../components/ui/ToastProvider"
+import { projects, tasks, labels, users } from "../mocks/fixtures"
 
 // The aggregation point: needs auth + users context, a router with :projectId resolved,
 // ToastProvider (BoardPage calls useToast() directly), and its 3 real fetch-backed hooks
@@ -28,9 +28,9 @@ const meta: Meta<typeof BoardPage> = {
             "/api/labels": { labels },
         }),
     ],
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof BoardPage>;
+type Story = StoryObj<typeof BoardPage>
 
-export const Default: Story = {};
+export const Default: Story = {}

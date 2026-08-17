@@ -5,72 +5,72 @@ import {
     useState,
     type FormEvent,
     type ReactNode,
-} from "react";
-import { Link } from "react-router-dom";
-import { AuthLayout } from "./auth/AuthLayout";
-import { debounce } from "../lib/debounce";
+} from "react"
+import { Link } from "react-router-dom"
+import { AuthLayout } from "./auth/AuthLayout"
+import { debounce } from "../lib/debounce"
 import {
     checkAreCredentialsAvailable,
     type CheckSignUpResponse,
-} from "../api/auth";
-import { useSignup } from "../hooks/useSignup";
-import type { ApiErrorResponse } from "../types/auth";
+} from "../api/auth"
+import { useSignup } from "../hooks/useSignup"
+import type { ApiErrorResponse } from "../types/auth"
 
 async function _checkAreCredentialsAvailable(
     username: string,
     email: string,
 ): Promise<Partial<CheckSignUpResponse & ApiErrorResponse>> {
-    return await checkAreCredentialsAvailable(username, email);
+    return await checkAreCredentialsAvailable(username, email)
 }
-const debouncedCheckCredentials = debounce(_checkAreCredentialsAvailable, 500);
+const debouncedCheckCredentials = debounce(_checkAreCredentialsAvailable, 500)
 
-const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
 function PasswordRequirement({
     met,
     children,
 }: {
-    met: boolean;
-    children: ReactNode;
+    met: boolean
+    children: ReactNode
 }) {
     const className = met
         ? "auth-layout__password-requirement auth-layout__password-requirement--met"
-        : "auth-layout__password-requirement";
+        : "auth-layout__password-requirement"
     return (
         <div className={className}>
             <span>{met ? "✓" : "○"}</span> {children}
         </div>
-    );
+    )
 }
 
 export function SignupPage() {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isCredentialsAvailable, setIsCredentialsAvailable] = useState(true);
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [isCredentialsAvailable, setIsCredentialsAvailable] = useState(true)
 
-    const { signup, isSubmitting, error, setError } = useSignup();
+    const { signup, isSubmitting, error, setError } = useSignup()
 
-    const hasMinLength = password.length >= 8;
-    const hasNumber = /\d/.test(password);
-    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasMinLength = password.length >= 8
+    const hasNumber = /\d/.test(password)
+    const hasLetter = /[a-zA-Z]/.test(password)
 
     const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
+        event.preventDefault()
         // triggers navigation via App.tsx react-router on success
-        signup(username, email, password);
-    };
+        signup(username, email, password)
+    }
 
     const isUsernameEmailComboAvailable = useCallback(async () => {
-        const response = await debouncedCheckCredentials(username, email);
+        const response = await debouncedCheckCredentials(username, email)
         if (!response.error) {
-            setError("");
-            return true;
+            setError("")
+            return true
         } else {
-            setError(response.error);
-            return false;
+            setError(response.error)
+            return false
         }
-    }, [username, email, setError]);
+    }, [username, email, setError])
 
     const isCreatePreconditionsEnabled =
         username &&
@@ -78,14 +78,14 @@ export function SignupPage() {
         EMAIL_REGEX.test(email) &&
         hasMinLength &&
         hasNumber &&
-        hasLetter;
+        hasLetter
     const isCreateEnabled =
-        isCreatePreconditionsEnabled && isCredentialsAvailable;
+        isCreatePreconditionsEnabled && isCredentialsAvailable
 
     const lastUsernameEmailParamsRef = useRef<{
-        username: string;
-        email: string;
-    }>({ username: "", email: "" });
+        username: string
+        email: string
+    }>({ username: "", email: "" })
 
     useEffect(() => {
         if (isCreatePreconditionsEnabled) {
@@ -99,16 +99,16 @@ export function SignupPage() {
                             lastUsernameEmailParamsRef.current = {
                                 username,
                                 email,
-                            };
-                            setIsCredentialsAvailable(true);
+                            }
+                            setIsCredentialsAvailable(true)
                         } else {
-                            setIsCredentialsAvailable(false);
+                            setIsCredentialsAvailable(false)
                         }
                     })
                     .catch((ex) => {
-                        console.log(ex);
-                        setIsCredentialsAvailable(false);
-                    });
+                        console.log(ex)
+                        setIsCredentialsAvailable(false)
+                    })
             }
         }
     }, [
@@ -116,7 +116,7 @@ export function SignupPage() {
         username,
         email,
         isUsernameEmailComboAvailable,
-    ]);
+    ])
 
     return (
         <AuthLayout
@@ -180,5 +180,5 @@ export function SignupPage() {
                 </p>
             </form>
         </AuthLayout>
-    );
+    )
 }

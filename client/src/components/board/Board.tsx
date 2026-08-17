@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 import {
     DndContext,
     DragOverlay,
@@ -8,21 +8,21 @@ import {
     useSensors,
     type DragEndEvent,
     type DragStartEvent,
-} from "@dnd-kit/core";
-import type { Task, TaskStatus } from "../../types/task";
-import { useUsers } from "../../context/useUsers";
-import { COLUMN_DEFS } from "./columnDefs";
-import { Column } from "./Column";
-import { TaskCard } from "./TaskCard";
-import "./Board.css";
+} from "@dnd-kit/core"
+import type { Task, TaskStatus } from "../../types/task"
+import { useUsers } from "../../context/useUsers"
+import { COLUMN_DEFS } from "./columnDefs"
+import { Column } from "./Column"
+import { TaskCard } from "./TaskCard"
+import "./Board.css"
 
 interface BoardProps {
-    tasks: Task[];
-    onOpenTask: (taskId: number) => void;
-    onOpenLabelPicker: (taskId: number) => void;
-    onRemoveLabel: (taskId: number, labelId: number) => void;
-    onAddTask: (name: string) => void;
-    onMoveTask: (taskId: number, newStatus: TaskStatus) => void;
+    tasks: Task[]
+    onOpenTask: (taskId: number) => void
+    onOpenLabelPicker: (taskId: number) => void
+    onRemoveLabel: (taskId: number, labelId: number) => void
+    onAddTask: (name: string) => void
+    onMoveTask: (taskId: number, newStatus: TaskStatus) => void
 }
 
 export function Board({
@@ -33,27 +33,27 @@ export function Board({
     onAddTask,
     onMoveTask,
 }: BoardProps) {
-    const { usersById } = useUsers();
-    const [activeTask, setActiveTask] = useState<Task | null>(null);
+    const { usersById } = useUsers()
+    const [activeTask, setActiveTask] = useState<Task | null>(null)
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: { distance: 4 },
         }),
-    );
+    )
 
     const handleDragStart = (event: DragStartEvent) => {
         const task =
-            tasks.find((candidate) => candidate.id === event.active.id) ?? null;
-        setActiveTask(task);
-    };
+            tasks.find((candidate) => candidate.id === event.active.id) ?? null
+        setActiveTask(task)
+    }
 
     const handleDragEnd = (event: DragEndEvent) => {
-        const { active, over } = event;
-        setActiveTask(null);
-        if (!over) return;
-        onMoveTask(Number(active.id), over.id as TaskStatus);
-    };
+        const { active, over } = event
+        setActiveTask(null)
+        if (!over) return
+        onMoveTask(Number(active.id), over.id as TaskStatus)
+    }
 
     return (
         <DndContext
@@ -102,5 +102,5 @@ export function Board({
                 )}
             </DragOverlay>
         </DndContext>
-    );
+    )
 }

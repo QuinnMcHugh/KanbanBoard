@@ -1,27 +1,27 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
-import { Toast as RadixToast } from "radix-ui";
-import { ToastContext, type ToastVariant } from "./toastContext";
-import "./Toast.css";
+import { useCallback, useMemo, useState, type ReactNode } from "react"
+import { Toast as RadixToast } from "radix-ui"
+import { ToastContext, type ToastVariant } from "./toastContext"
+import "./Toast.css"
 
 interface ToastItem {
-    id: string;
-    variant: ToastVariant;
-    message: string;
+    id: string
+    variant: ToastVariant
+    message: string
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-    const [toasts, setToasts] = useState<ToastItem[]>([]);
+    const [toasts, setToasts] = useState<ToastItem[]>([])
 
     const addToast = useCallback((variant: ToastVariant, message: string) => {
-        const id = crypto.randomUUID();
-        setToasts((current) => [...current, { id, variant, message }]);
-    }, []);
+        const id = crypto.randomUUID()
+        setToasts((current) => [...current, { id, variant, message }])
+    }, [])
 
     const removeToast = useCallback((id: string) => {
-        setToasts((current) => current.filter((toast) => toast.id !== id));
-    }, []);
+        setToasts((current) => current.filter((toast) => toast.id !== id))
+    }, [])
 
-    const value = useMemo(() => ({ addToast }), [addToast]);
+    const value = useMemo(() => ({ addToast }), [addToast])
 
     return (
         <ToastContext.Provider value={value}>
@@ -32,7 +32,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                         key={toast.id}
                         className={`toast toast--${toast.variant}`}
                         onOpenChange={(open) => {
-                            if (!open) removeToast(toast.id);
+                            if (!open) removeToast(toast.id)
                         }}
                     >
                         <RadixToast.Description className="toast__message">
@@ -44,5 +44,5 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 <RadixToast.Viewport className="toast-viewport" />
             </RadixToast.Provider>
         </ToastContext.Provider>
-    );
+    )
 }

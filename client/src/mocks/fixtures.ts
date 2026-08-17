@@ -1,14 +1,14 @@
-import type { User } from "../types/user";
-import type { Project } from "../types/project";
-import type { Label } from "../types/label";
-import type { Task } from "../types/task";
+import type { User } from "../types/user"
+import type { Project } from "../types/project"
+import type { Label } from "../types/label"
+import type { Task } from "../types/task"
 
 // Static, dev/Storybook-only fixture data — never imported by real app code.
 export const users: User[] = [
     { id: 1, username: "alice_admin", email: "alice@example.com" },
     { id: 2, username: "bob_builder", email: "bob@example.com" },
     { id: 3, username: "quinn_the_eskimo", email: "quinn@example.com" },
-];
+]
 
 export const projects: Project[] = [
     {
@@ -25,14 +25,14 @@ export const projects: Project[] = [
         owner: users[1].username,
         owner_email: users[1].email,
     },
-];
+]
 
 export const labels: Label[] = [
     { id: 1, name: "Frontend", color: "#3b82f6" },
     { id: 2, name: "Backend", color: "#22c55e" },
     { id: 3, name: "Urgent", color: "#ef4444" },
     { id: 4, name: "Design", color: "#8b5cf6" },
-];
+]
 
 export const tasks: Task[] = [
     {
@@ -91,4 +91,4 @@ export const tasks: Task[] = [
         updated_at: "2026-07-01T16:00:00.000Z",
         labels: [labels[3]],
     },
-];
+]

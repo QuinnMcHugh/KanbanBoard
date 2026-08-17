@@ -1,10 +1,10 @@
-import { Avatar as RadixAvatar } from "radix-ui";
-import { colorForName, initials } from "../../lib/identity";
-import "./Avatar.css";
+import { Avatar as RadixAvatar } from "radix-ui"
+import { colorForName, initials } from "../../lib/identity"
+import "./Avatar.css"
 
 interface AvatarProps {
-    name: string;
-    size?: "sm" | "md";
+    name: string
+    size?: "sm" | "md"
 }
 
 export function Avatar({ name, size = "sm" }: AvatarProps) {
@@ -17,5 +17,5 @@ export function Avatar({ name, size = "sm" }: AvatarProps) {
                 {initials(name)}
             </RadixAvatar.Fallback>
         </RadixAvatar.Root>
-    );
+    )
 }

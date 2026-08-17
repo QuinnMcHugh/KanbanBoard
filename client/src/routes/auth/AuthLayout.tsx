@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
-import "./AuthLayout.css";
+import type { ReactNode } from "react"
+import "./AuthLayout.css"
 
 interface AuthLayoutProps {
-    title: string;
-    subtitle: string;
-    children: ReactNode;
+    title: string
+    subtitle: string
+    children: ReactNode
 }
 
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
@@ -21,5 +21,5 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
                 <div className="auth-layout__card">{children}</div>
             </div>
         </div>
-    );
+    )
 }

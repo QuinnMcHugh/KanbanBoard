@@ -1,37 +1,37 @@
-import { useState } from "react";
-import { Dialog, Select } from "radix-ui";
-import type { Task } from "../../types/task";
-import { LabelBadge } from "../ui/LabelBadge";
-import "./TaskDetailDialog.css";
+import { useState } from "react"
+import { Dialog, Select } from "radix-ui"
+import type { Task } from "../../types/task"
+import { LabelBadge } from "../ui/LabelBadge"
+import "./TaskDetailDialog.css"
 
-const UNASSIGNED = "unassigned";
+const UNASSIGNED = "unassigned"
 
 interface AssigneeOption {
-    id: number;
-    name: string;
+    id: number
+    name: string
 }
 
 export interface TaskDetailPatch {
-    name?: string;
-    description?: string;
-    assigned_to_user_id?: number | null;
+    name?: string
+    description?: string
+    assigned_to_user_id?: number | null
 }
 
 interface TaskDetailDialogProps {
-    task: Task | null;
-    assigneeOptions: AssigneeOption[];
-    onOpenChange: (open: boolean) => void;
-    onSave: (patch: TaskDetailPatch) => void;
-    onOpenLabelPicker: () => void;
-    onRemoveLabel: (labelId: number) => void;
-    onDelete: () => void;
+    task: Task | null
+    assigneeOptions: AssigneeOption[]
+    onOpenChange: (open: boolean) => void
+    onSave: (patch: TaskDetailPatch) => void
+    onOpenLabelPicker: () => void
+    onRemoveLabel: (labelId: number) => void
+    onDelete: () => void
 }
 
 function formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString(undefined, {
         month: "short",
         day: "numeric",
-    });
+    })
 }
 
 export function TaskDetailDialog({
@@ -43,36 +43,36 @@ export function TaskDetailDialog({
     onRemoveLabel,
     onDelete,
 }: TaskDetailDialogProps) {
-    const [confirmingDelete, setConfirmingDelete] = useState(false);
-    const [name, setName] = useState(task?.name ?? "");
-    const [description, setDescription] = useState(task?.description ?? "");
+    const [confirmingDelete, setConfirmingDelete] = useState(false)
+    const [name, setName] = useState(task?.name ?? "")
+    const [description, setDescription] = useState(task?.description ?? "")
     const [assigneeId, setAssigneeId] = useState<number | null>(
         task?.assigned_to_user_id ?? null,
-    );
+    )
 
     const handleOpenChange = (next: boolean) => {
         if (!next && task) {
-            const patch: TaskDetailPatch = {};
-            if (name !== task.name) patch.name = name;
+            const patch: TaskDetailPatch = {}
+            if (name !== task.name) patch.name = name
             if (description !== task.description)
-                patch.description = description;
+                patch.description = description
             if (assigneeId !== task.assigned_to_user_id) {
-                patch.assigned_to_user_id = assigneeId;
+                patch.assigned_to_user_id = assigneeId
             }
-            if (Object.keys(patch).length > 0) onSave(patch);
+            if (Object.keys(patch).length > 0) onSave(patch)
         }
-        onOpenChange(next);
-        if (!next) setConfirmingDelete(false);
-    };
+        onOpenChange(next)
+        if (!next) setConfirmingDelete(false)
+    }
 
     const handleDeleteClick = () => {
         if (!confirmingDelete) {
-            setConfirmingDelete(true);
-            return;
+            setConfirmingDelete(true)
+            return
         }
-        onDelete();
-        setConfirmingDelete(false);
-    };
+        onDelete()
+        setConfirmingDelete(false)
+    }
 
     return (
         <Dialog.Root open={task !== null} onOpenChange={handleOpenChange}>
@@ -211,5 +211,5 @@ export function TaskDetailDialog({
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
-    );
+    )
 }

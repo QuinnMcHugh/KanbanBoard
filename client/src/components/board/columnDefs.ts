@@ -1,9 +1,9 @@
-import type { TaskStatus } from "../../types/task";
+import type { TaskStatus } from "../../types/task"
 
 export interface ColumnDef {
-    status: TaskStatus;
-    label: string;
-    accentColor: string;
+    status: TaskStatus
+    label: string
+    accentColor: string
 }
 
 export const COLUMN_DEFS: ColumnDef[] = [
@@ -20,4 +20,4 @@ export const COLUMN_DEFS: ColumnDef[] = [
     },
     { status: "blocked", label: "Blocked", accentColor: "oklch(55% 0.19 25)" },
     { status: "done", label: "Done", accentColor: "oklch(62% 0.13 150)" },
-];
+]

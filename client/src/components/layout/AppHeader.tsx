@@ -1,17 +1,17 @@
-import { DropdownMenu } from "radix-ui";
-import type { Project } from "../../types/project";
-import type { User } from "../../types/user";
-import { Avatar } from "../ui/Avatar";
-import "./AppHeader.css";
+import { DropdownMenu } from "radix-ui"
+import type { Project } from "../../types/project"
+import type { User } from "../../types/user"
+import { Avatar } from "../ui/Avatar"
+import "./AppHeader.css"
 
 interface AppHeaderProps {
-    projects: Project[];
-    currentProject: Project | null;
-    onSelectProject: (id: number) => void;
-    onCreateProject: () => void;
-    onDeleteProject: () => void;
-    user: User | null;
-    onLogOut: () => void;
+    projects: Project[]
+    currentProject: Project | null
+    onSelectProject: (id: number) => void
+    onCreateProject: () => void
+    onDeleteProject: () => void
+    user: User | null
+    onLogOut: () => void
 }
 
 export function AppHeader({
@@ -109,5 +109,5 @@ export function AppHeader({
                 )}
             </div>
         </header>
-    );
+    )
 }

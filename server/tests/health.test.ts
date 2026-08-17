@@ -1,12 +1,12 @@
-import { describe, it, expect } from "vitest";
-import request from "supertest";
-import app from "../src/app";
+import { describe, it, expect } from "vitest"
+import request from "supertest"
+import app from "../src/app"
 
 describe("GET /api/health/check", () => {
     it("returns 200 with a success status", async () => {
-        const res = await request(app).get("/api/health/check");
+        const res = await request(app).get("/api/health/check")
 
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe("success");
-    });
-});
+        expect(res.status).toBe(200)
+        expect(res.body.status).toBe("success")
+    })
+})

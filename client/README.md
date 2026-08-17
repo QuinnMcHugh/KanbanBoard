@@ -69,12 +69,12 @@ type-check/build (`npm run build`), so nothing here ships or gates a real deploy
 ```
 src/
 ├── api/          # Thin fetch wrappers per backend resource
-├── components/   
+├── components/
 ├── context/      # React Context providers
 ├── hooks/        # Per-resource data hooksbuilt on api/
 ├── lib/          # Shared client-side utilities
 ├── mocks/        # Storybook-only fixtures/decorators
-├── routes/       
-├── styles/       
+├── routes/
+├── styles/
 └── types/        # TypeScript types mirroring the server's Zod schemas
 ```

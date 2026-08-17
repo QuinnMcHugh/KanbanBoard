@@ -1,12 +1,12 @@
-import { z } from "zod";
-import { registry } from "./registry";
+import { z } from "zod"
+import { registry } from "./registry"
 
 const healthResponseSchema = z
     .object({
         status: z.literal("success"),
         message: z.string(),
     })
-    .meta({ id: "HealthResponse" });
+    .meta({ id: "HealthResponse" })
 
 registry.registerPath({
     method: "get",
@@ -19,4 +19,4 @@ registry.registerPath({
             content: { "application/json": { schema: healthResponseSchema } },
         },
     },
-});
+})

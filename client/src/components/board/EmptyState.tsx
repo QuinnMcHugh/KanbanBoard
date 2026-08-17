@@ -1,7 +1,7 @@
-import "./EmptyState.css";
+import "./EmptyState.css"
 
 interface EmptyStateProps {
-    onCreateProject: () => void;
+    onCreateProject: () => void
 }
 
 export function EmptyState({ onCreateProject }: EmptyStateProps) {
@@ -23,5 +23,5 @@ export function EmptyState({ onCreateProject }: EmptyStateProps) {
                 </button>
             </div>
         </div>
-    );
+    )
 }

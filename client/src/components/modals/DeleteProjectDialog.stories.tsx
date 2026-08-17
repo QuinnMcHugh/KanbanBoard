@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
-import { DeleteProjectDialog } from "./DeleteProjectDialog";
-import { projects } from "../../mocks/fixtures";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { fn } from "storybook/test"
+import { DeleteProjectDialog } from "./DeleteProjectDialog"
+import { projects } from "../../mocks/fixtures"
 
 const meta: Meta<typeof DeleteProjectDialog> = {
     component: DeleteProjectDialog,
@@ -11,9 +11,9 @@ const meta: Meta<typeof DeleteProjectDialog> = {
         onConfirm: fn(),
         projectName: projects[0].name,
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof DeleteProjectDialog>;
+type Story = StoryObj<typeof DeleteProjectDialog>
 
-export const Default: Story = {};
+export const Default: Story = {}

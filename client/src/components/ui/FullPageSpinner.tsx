@@ -1,4 +1,4 @@
-import "./FullPageSpinner.css";
+import "./FullPageSpinner.css"
 
 export function FullPageSpinner() {
     return (
@@ -6,5 +6,5 @@ export function FullPageSpinner() {
             <div className="full-page-spinner__ring" />
             <span className="sr-only">Loading…</span>
         </div>
-    );
+    )
 }

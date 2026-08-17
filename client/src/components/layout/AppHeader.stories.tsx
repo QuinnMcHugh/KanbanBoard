@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
-import { AppHeader } from "./AppHeader";
-import { projects, users } from "../../mocks/fixtures";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { fn } from "storybook/test"
+import { AppHeader } from "./AppHeader"
+import { projects, users } from "../../mocks/fixtures"
 
 const meta: Meta<typeof AppHeader> = {
     component: AppHeader,
@@ -14,13 +14,13 @@ const meta: Meta<typeof AppHeader> = {
         user: users[0],
         onLogOut: fn(),
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof AppHeader>;
+type Story = StoryObj<typeof AppHeader>
 
-export const Default: Story = {};
+export const Default: Story = {}
 
 export const NoProjectsYet: Story = {
     args: { projects: [], currentProject: null },
-};
+}

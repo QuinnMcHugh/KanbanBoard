@@ -1,14 +1,14 @@
-import type { CSSProperties } from "react";
-import type { Label } from "../../types/label";
-import "./LabelBadge.css";
+import type { CSSProperties } from "react"
+import type { Label } from "../../types/label"
+import "./LabelBadge.css"
 
 interface LabelBadgeProps {
-    label: Label;
-    onRemove?: () => void;
+    label: Label
+    onRemove?: () => void
 }
 
 export function LabelBadge({ label, onRemove }: LabelBadgeProps) {
-    const style = { "--label-color": label.color } as CSSProperties;
+    const style = { "--label-color": label.color } as CSSProperties
 
     return (
         <span className="label-badge" style={style}>
@@ -24,5 +24,5 @@ export function LabelBadge({ label, onRemove }: LabelBadgeProps) {
                 </button>
             )}
         </span>
-    );
+    )
 }

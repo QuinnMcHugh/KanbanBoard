@@ -1,10 +1,10 @@
-import { AlertDialog } from "radix-ui";
+import { AlertDialog } from "radix-ui"
 
 interface DeleteProjectDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    projectName: string;
-    onConfirm: () => void;
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    projectName: string
+    onConfirm: () => void
 }
 
 export function DeleteProjectDialog({
@@ -48,5 +48,5 @@ export function DeleteProjectDialog({
                 </AlertDialog.Content>
             </AlertDialog.Portal>
         </AlertDialog.Root>
-    );
+    )
 }

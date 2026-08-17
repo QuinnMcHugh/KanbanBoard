@@ -1,10 +1,21 @@
-import { registry } from "./registry";
-import { authResponseSchema, checkSignupAvailabilityResponseSchema, checkSignupAvailabilitySchema, loginSchema, meResponseSchema, signupSchema } from "../schemas/authSchemas";
-import { authFailureResponses, notFoundResponse, validationFailureResponse } from "./shared";
+import { registry } from "./registry"
+import {
+    authResponseSchema,
+    checkSignupAvailabilityResponseSchema,
+    checkSignupAvailabilitySchema,
+    loginSchema,
+    meResponseSchema,
+    signupSchema,
+} from "../schemas/authSchemas"
+import {
+    authFailureResponses,
+    notFoundResponse,
+    validationFailureResponse,
+} from "./shared"
 
 const rateLimitedResponse = notFoundResponse(
-    "Too many signup/login attempts from this IP — shared limiter, 10 per 15 minutes."
-);
+    "Too many signup/login attempts from this IP — shared limiter, 10 per 15 minutes.",
+)
 
 registry.registerPath({
     method: "post",
@@ -15,12 +26,15 @@ registry.registerPath({
         body: { content: { "application/json": { schema: signupSchema } } },
     },
     responses: {
-        201: { description: "Account created.", content: { "application/json": { schema: authResponseSchema } } },
+        201: {
+            description: "Account created.",
+            content: { "application/json": { schema: authResponseSchema } },
+        },
         400: validationFailureResponse,
         409: notFoundResponse("Username or email already in use."),
         429: rateLimitedResponse,
     },
-});
+})
 
 registry.registerPath({
     method: "post",
@@ -28,15 +42,26 @@ registry.registerPath({
     tags: ["Auth"],
     summary: "Check if account sign-in is available",
     request: {
-        body: { content: { "application/json": { schema: checkSignupAvailabilitySchema } } },
+        body: {
+            content: {
+                "application/json": { schema: checkSignupAvailabilitySchema },
+            },
+        },
     },
     responses: {
-        200: { description: "Username / email combo is available", content: { "application/json": { schema: checkSignupAvailabilityResponseSchema } } },
+        200: {
+            description: "Username / email combo is available",
+            content: {
+                "application/json": {
+                    schema: checkSignupAvailabilityResponseSchema,
+                },
+            },
+        },
         400: validationFailureResponse,
         409: notFoundResponse("Username or email already in use."),
         429: rateLimitedResponse,
     },
-});
+})
 
 registry.registerPath({
     method: "post",
@@ -47,12 +72,15 @@ registry.registerPath({
         body: { content: { "application/json": { schema: loginSchema } } },
     },
     responses: {
-        200: { description: "Login succeeded.", content: { "application/json": { schema: authResponseSchema } } },
+        200: {
+            description: "Login succeeded.",
+            content: { "application/json": { schema: authResponseSchema } },
+        },
         400: validationFailureResponse,
         401: notFoundResponse("Invalid email or password."),
         429: rateLimitedResponse,
     },
-});
+})
 
 registry.registerPath({
     method: "get",
@@ -68,4 +96,4 @@ registry.registerPath({
         ...authFailureResponses,
         404: notFoundResponse("User not found."),
     },
-});
+})

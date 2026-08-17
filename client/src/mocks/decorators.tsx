@@ -1,10 +1,10 @@
-import type { Decorator } from "@storybook/react-vite";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext, type AuthContextValue } from "../context/authContext";
-import { UsersContext, type UsersContextValue } from "../context/usersContext";
-import type { User } from "../types/user";
+import type { Decorator } from "@storybook/react-vite"
+import { MemoryRouter, Route, Routes } from "react-router-dom"
+import { AuthContext, type AuthContextValue } from "../context/authContext"
+import { UsersContext, type UsersContextValue } from "../context/usersContext"
+import type { User } from "../types/user"
 
-const noop = () => {};
+const noop = () => {}
 
 /**
  * Supplies AuthContext directly with a static value, bypassing the real
@@ -18,13 +18,13 @@ export function withMockAuth(user: User | null): Decorator {
         isInitializing: false,
         setSession: noop,
         clearSession: noop,
-    };
+    }
 
     return (Story) => (
         <AuthContext.Provider value={value}>
             <Story />
         </AuthContext.Provider>
-    );
+    )
 }
 
 /** Same idea as withMockAuth, for UsersContext — bypasses UsersProvider's getUsers() fetch. */
@@ -34,13 +34,13 @@ export function withMockUsers(users: User[]): Decorator {
         usersById: Object.fromEntries(users.map((u) => [u.id, u.username])),
         isLoading: false,
         error: "",
-    };
+    }
 
     return (Story) => (
         <UsersContext.Provider value={value}>
             <Story />
         </UsersContext.Provider>
-    );
+    )
 }
 
 /**
@@ -59,5 +59,5 @@ export function withRouter(initialPath: string, routePath?: string): Decorator {
                 <Story />
             )}
         </MemoryRouter>
-    );
+    )
 }

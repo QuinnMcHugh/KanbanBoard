@@ -2,6 +2,6 @@
 // with the fields this app actually stores there.
 declare namespace Express {
     interface Locals {
-        cspNonce: string;
+        cspNonce: string
     }
 }

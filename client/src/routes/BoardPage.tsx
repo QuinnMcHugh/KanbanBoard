@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
-import { useToast } from "../components/ui/useToast";
-import { FullPageSpinner } from "../components/ui/FullPageSpinner";
-import { AppHeader } from "../components/layout/AppHeader";
-import { Board } from "../components/board/Board";
-import { EmptyState } from "../components/board/EmptyState";
-import { CreateProjectDialog } from "../components/modals/CreateProjectDialog";
-import { DeleteProjectDialog } from "../components/modals/DeleteProjectDialog";
-import { TaskDetailDialog } from "../components/modals/TaskDetailDialog";
-import { LabelManagerDialog } from "../components/modals/LabelManagerDialog";
-import { useProjects } from "../hooks/useProjects";
-import { useTasks } from "../hooks/useTasks";
-import { useLabels } from "../hooks/useLabels";
-import { useUsers } from "../context/useUsers";
-import type { TaskStatus } from "../types/task";
-import "./BoardPage.css";
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { useAuth } from "../context/useAuth"
+import { useToast } from "../components/ui/useToast"
+import { FullPageSpinner } from "../components/ui/FullPageSpinner"
+import { AppHeader } from "../components/layout/AppHeader"
+import { Board } from "../components/board/Board"
+import { EmptyState } from "../components/board/EmptyState"
+import { CreateProjectDialog } from "../components/modals/CreateProjectDialog"
+import { DeleteProjectDialog } from "../components/modals/DeleteProjectDialog"
+import { TaskDetailDialog } from "../components/modals/TaskDetailDialog"
+import { LabelManagerDialog } from "../components/modals/LabelManagerDialog"
+import { useProjects } from "../hooks/useProjects"
+import { useTasks } from "../hooks/useTasks"
+import { useLabels } from "../hooks/useLabels"
+import { useUsers } from "../context/useUsers"
+import type { TaskStatus } from "../types/task"
+import "./BoardPage.css"
 
 export function BoardPage() {
-    const { projectId } = useParams();
-    const navigate = useNavigate();
-    const { user, clearSession } = useAuth();
-    const { addToast } = useToast();
+    const { projectId } = useParams()
+    const navigate = useNavigate()
+    const { user, clearSession } = useAuth()
+    const { addToast } = useToast()
 
     const {
         projects,
@@ -29,77 +29,77 @@ export function BoardPage() {
         error: projectsError,
         createProject,
         deleteProject,
-    } = useProjects();
+    } = useProjects()
     const {
         labels,
         isLoading: labelsLoading,
         error: labelsError,
         createLabel,
         deleteLabel,
-    } = useLabels();
-    const { users, isLoading: usersLoading, error: usersError } = useUsers();
+    } = useLabels()
+    const { users, isLoading: usersLoading, error: usersError } = useUsers()
 
-    const [showCreateProject, setShowCreateProject] = useState(false);
-    const [showDeleteProject, setShowDeleteProject] = useState(false);
-    const [openTaskId, setOpenTaskId] = useState<number | null>(null);
+    const [showCreateProject, setShowCreateProject] = useState(false)
+    const [showDeleteProject, setShowDeleteProject] = useState(false)
+    const [openTaskId, setOpenTaskId] = useState<number | null>(null)
     const [labelPickerTaskId, setLabelPickerTaskId] = useState<number | null>(
         null,
-    );
+    )
 
-    const currentProjectId = projectId ? Number(projectId) : null;
+    const currentProjectId = projectId ? Number(projectId) : null
     const currentProject =
-        projects.find((project) => project.id === currentProjectId) ?? null;
+        projects.find((project) => project.id === currentProjectId) ?? null
 
     const { tasks, setTasks, createTask, updateTask, deleteTask } =
-        useTasks(currentProjectId);
+        useTasks(currentProjectId)
 
-    const openTask = tasks.find((task) => task.id === openTaskId) ?? null;
+    const openTask = tasks.find((task) => task.id === openTaskId) ?? null
     const labelPickerTask =
-        tasks.find((task) => task.id === labelPickerTaskId) ?? null;
+        tasks.find((task) => task.id === labelPickerTaskId) ?? null
 
     useEffect(() => {
         if (!projectsLoading && !projectId && projects.length > 0) {
-            void navigate(`/projects/${projects[0].id}`, { replace: true });
+            void navigate(`/projects/${projects[0].id}`, { replace: true })
         }
-    }, [projectId, projects, projectsLoading, navigate]);
+    }, [projectId, projects, projectsLoading, navigate])
 
     useEffect(() => {
-        const loadError = projectsError || labelsError || usersError;
-        if (loadError) addToast("error", loadError);
-    }, [projectsError, labelsError, usersError, addToast]);
+        const loadError = projectsError || labelsError || usersError
+        if (loadError) addToast("error", loadError)
+    }, [projectsError, labelsError, usersError, addToast])
 
     if (projectsLoading || labelsLoading || usersLoading) {
-        return <FullPageSpinner />;
+        return <FullPageSpinner />
     }
 
     const handleCreateProject = async (name: string) => {
-        if (!user) return;
+        if (!user) return
         try {
-            const project = await createProject(name, user.id);
-            setShowCreateProject(false);
-            void navigate(`/projects/${project.id}`);
+            const project = await createProject(name, user.id)
+            setShowCreateProject(false)
+            void navigate(`/projects/${project.id}`)
         } catch {
-            addToast("error", "Unable to create project.");
+            addToast("error", "Unable to create project.")
         }
-    };
+    }
 
     const handleConfirmDeleteProject = async () => {
-        if (!currentProject) return;
+        if (!currentProject) return
         try {
-            await deleteProject(currentProject.id);
-            setShowDeleteProject(false);
-            addToast("success", "Project deleted.");
+            await deleteProject(currentProject.id)
+            setShowDeleteProject(false)
+            addToast("success", "Project deleted.")
             const remaining = projects.filter(
                 (project) => project.id !== currentProject.id,
-            );
+            )
             void navigate(
                 remaining[0] ? `/projects/${remaining[0].id}` : "/projects",
                 { replace: true },
-            );
+            )
         } catch {
-            addToast("error", "Unable to delete project.");
+            addToast("error", "Unable to delete project.")
         }
-    };
+    }
 
     const handleAddTask = async (name: string) => {
         try {
@@ -107,104 +107,104 @@ export function BoardPage() {
                 name,
                 description: "No description yet.",
                 status: "to_do",
-            });
+            })
         } catch {
-            addToast("error", "Unable to create task.");
+            addToast("error", "Unable to create task.")
         }
-    };
+    }
 
     const patchOpenTask = async (patch: Parameters<typeof updateTask>[1]) => {
-        if (openTaskId === null) return;
+        if (openTaskId === null) return
         try {
-            await updateTask(openTaskId, patch);
+            await updateTask(openTaskId, patch)
         } catch {
-            addToast("error", "Unable to update task.");
+            addToast("error", "Unable to update task.")
         }
-    };
+    }
 
     const handleRemoveLabelFromTask = async (
         taskId: number,
         labelId: number,
     ) => {
-        const task = tasks.find((candidate) => candidate.id === taskId);
-        if (!task) return;
+        const task = tasks.find((candidate) => candidate.id === taskId)
+        if (!task) return
         const labelIds = task.labels
             .filter((label) => label.id !== labelId)
-            .map((label) => label.id);
+            .map((label) => label.id)
         try {
-            await updateTask(taskId, { labelIds });
+            await updateTask(taskId, { labelIds })
         } catch {
-            addToast("error", "Unable to remove label.");
+            addToast("error", "Unable to remove label.")
         }
-    };
+    }
 
     const handleDeleteOpenTask = async () => {
-        if (openTaskId === null) return;
+        if (openTaskId === null) return
         try {
-            await deleteTask(openTaskId);
-            setOpenTaskId(null);
-            addToast("success", "Task deleted.");
+            await deleteTask(openTaskId)
+            setOpenTaskId(null)
+            addToast("success", "Task deleted.")
         } catch {
-            addToast("error", "Unable to delete task.");
+            addToast("error", "Unable to delete task.")
         }
-    };
+    }
 
     const handleSaveTaskLabels = async (labelIds: number[]) => {
-        if (labelPickerTaskId === null) return;
+        if (labelPickerTaskId === null) return
         try {
-            await updateTask(labelPickerTaskId, { labelIds });
+            await updateTask(labelPickerTaskId, { labelIds })
         } catch {
-            addToast("error", "Unable to update labels.");
+            addToast("error", "Unable to update labels.")
         }
-    };
+    }
 
     const handleMoveTask = async (taskId: number, newStatus: TaskStatus) => {
-        const task = tasks.find((candidate) => candidate.id === taskId);
-        if (!task || task.status === newStatus) return;
+        const task = tasks.find((candidate) => candidate.id === taskId)
+        if (!task || task.status === newStatus) return
 
-        const previousTasks = tasks;
+        const previousTasks = tasks
         setTasks((prev) =>
             prev.map((candidate) =>
                 candidate.id === taskId
                     ? { ...candidate, status: newStatus }
                     : candidate,
             ),
-        );
+        )
 
         try {
-            await updateTask(taskId, { status: newStatus });
+            await updateTask(taskId, { status: newStatus })
         } catch {
-            setTasks(previousTasks);
-            addToast("error", "Unable to move task.");
+            setTasks(previousTasks)
+            addToast("error", "Unable to move task.")
         }
-    };
+    }
 
     const handleDeleteGlobalLabel = async (labelId: number) => {
         try {
-            await deleteLabel(labelId);
+            await deleteLabel(labelId)
             setTasks((prev) =>
                 prev.map((task) => ({
                     ...task,
                     labels: task.labels.filter((label) => label.id !== labelId),
                 })),
-            );
+            )
         } catch {
-            addToast("error", "Unable to delete label.");
+            addToast("error", "Unable to delete label.")
         }
-    };
+    }
 
     const handleCreateLabel = async (name: string, color: string) => {
         try {
-            await createLabel(name, color);
+            await createLabel(name, color)
         } catch {
-            addToast("error", "Unable to create label.");
+            addToast("error", "Unable to create label.")
         }
-    };
+    }
 
     const assigneeOptions = users.map((candidate) => ({
         id: candidate.id,
         name: candidate.username,
-    }));
+    }))
 
     return (
         <div className="board-page">
@@ -216,8 +216,8 @@ export function BoardPage() {
                 onDeleteProject={() => setShowDeleteProject(true)}
                 user={user}
                 onLogOut={() => {
-                    clearSession();
-                    void navigate("/login");
+                    clearSession()
+                    void navigate("/login")
                 }}
             />
 
@@ -260,15 +260,15 @@ export function BoardPage() {
                 task={openTask}
                 assigneeOptions={assigneeOptions}
                 onOpenChange={(open) => {
-                    if (!open) setOpenTaskId(null);
+                    if (!open) setOpenTaskId(null)
                 }}
                 onSave={(patch) => void patchOpenTask(patch)}
                 onOpenLabelPicker={() => {
-                    if (openTaskId !== null) setLabelPickerTaskId(openTaskId);
+                    if (openTaskId !== null) setLabelPickerTaskId(openTaskId)
                 }}
                 onRemoveLabel={(labelId) => {
                     if (openTaskId !== null)
-                        void handleRemoveLabelFromTask(openTaskId, labelId);
+                        void handleRemoveLabelFromTask(openTaskId, labelId)
                 }}
                 onDelete={() => void handleDeleteOpenTask()}
             />
@@ -277,7 +277,7 @@ export function BoardPage() {
                 key={labelPickerTaskId ?? "closed"}
                 open={labelPickerTaskId !== null}
                 onOpenChange={(open) => {
-                    if (!open) setLabelPickerTaskId(null);
+                    if (!open) setLabelPickerTaskId(null)
                 }}
                 labels={labels}
                 checkedLabelIds={
@@ -292,5 +292,5 @@ export function BoardPage() {
                 }
             />
         </div>
-    );
+    )
 }

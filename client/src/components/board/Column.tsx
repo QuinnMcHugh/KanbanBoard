@@ -1,19 +1,19 @@
-import { useState, type FormEvent } from "react";
-import { useDroppable } from "@dnd-kit/core";
-import type { Task } from "../../types/task";
-import type { ColumnDef } from "./columnDefs";
-import { DraggableTaskCard } from "./DraggableTaskCard";
-import "./Column.css";
+import { useState, type FormEvent } from "react"
+import { useDroppable } from "@dnd-kit/core"
+import type { Task } from "../../types/task"
+import type { ColumnDef } from "./columnDefs"
+import { DraggableTaskCard } from "./DraggableTaskCard"
+import "./Column.css"
 
 interface ColumnProps {
-    def: ColumnDef;
-    tasks: Task[];
-    isDragActive: boolean;
-    usersById: Record<number, string>;
-    onOpenTask: (taskId: number) => void;
-    onOpenLabelPicker: (taskId: number) => void;
-    onRemoveLabel: (taskId: number, labelId: number) => void;
-    onAddTask?: (name: string) => void;
+    def: ColumnDef
+    tasks: Task[]
+    isDragActive: boolean
+    usersById: Record<number, string>
+    onOpenTask: (taskId: number) => void
+    onOpenLabelPicker: (taskId: number) => void
+    onRemoveLabel: (taskId: number, labelId: number) => void
+    onAddTask?: (name: string) => void
 }
 
 export function Column({
@@ -26,26 +26,26 @@ export function Column({
     onRemoveLabel,
     onAddTask,
 }: ColumnProps) {
-    const [isAdding, setIsAdding] = useState(false);
-    const [newTaskName, setNewTaskName] = useState("");
+    const [isAdding, setIsAdding] = useState(false)
+    const [newTaskName, setNewTaskName] = useState("")
 
-    const { setNodeRef, isOver } = useDroppable({ id: def.status });
+    const { setNodeRef, isOver } = useDroppable({ id: def.status })
 
     const cancelAdding = () => {
-        setIsAdding(false);
-        setNewTaskName("");
-    };
+        setIsAdding(false)
+        setNewTaskName("")
+    }
 
     const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        const name = newTaskName.trim();
+        event.preventDefault()
+        const name = newTaskName.trim()
         if (!name) {
-            cancelAdding();
-            return;
+            cancelAdding()
+            return
         }
-        onAddTask?.(name);
-        cancelAdding();
-    };
+        onAddTask?.(name)
+        cancelAdding()
+    }
 
     const columnClassName = [
         "column",
@@ -53,7 +53,7 @@ export function Column({
         isOver && "column--drop-over",
     ]
         .filter(Boolean)
-        .join(" ");
+        .join(" ")
 
     return (
         <div ref={setNodeRef} className={columnClassName}>
@@ -69,12 +69,16 @@ export function Column({
             {onAddTask && isAdding && (
                 <form className="column__add-task-form" onSubmit={handleSubmit}>
                     <input
+                        // This input only renders after the user clicks "+ Add
+                        // Task", so moving focus into it is the expected/accessible
+                        // response to that action, not a page-load autofocus.
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus
                         placeholder="Task title…"
                         value={newTaskName}
                         onChange={(event) => setNewTaskName(event.target.value)}
                         onKeyDown={(event) => {
-                            if (event.key === "Escape") cancelAdding();
+                            if (event.key === "Escape") cancelAdding()
                         }}
                     />
                     <div className="column__add-task-actions">
@@ -121,5 +125,5 @@ export function Column({
                 </button>
             )}
         </div>
-    );
+    )
 }

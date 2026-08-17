@@ -1,17 +1,17 @@
-import { lazy, Suspense } from "react";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./context/AuthProvider";
-import { UsersProvider } from "./context/UsersProvider";
-import { ToastProvider } from "./components/ui/ToastProvider";
-import { FullPageSpinner } from "./components/ui/FullPageSpinner";
-import { RequireAuth } from "./components/routing/RequireAuth";
-import { RedirectIfLoggedIn } from "./components/routing/RedirectIfLoggedIn";
-import { LoginPage } from "./routes/LoginPage";
-import { SignupPage } from "./routes/SignupPage";
+import { lazy, Suspense } from "react"
+import { Navigate, Outlet, Route, Routes } from "react-router-dom"
+import { AuthProvider } from "./context/AuthProvider"
+import { UsersProvider } from "./context/UsersProvider"
+import { ToastProvider } from "./components/ui/ToastProvider"
+import { FullPageSpinner } from "./components/ui/FullPageSpinner"
+import { RequireAuth } from "./components/routing/RequireAuth"
+import { RedirectIfLoggedIn } from "./components/routing/RedirectIfLoggedIn"
+import { LoginPage } from "./routes/LoginPage"
+import { SignupPage } from "./routes/SignupPage"
 
 const BoardPage = lazy(() =>
     import("./routes/BoardPage").then((m) => ({ default: m.BoardPage })),
-);
+)
 
 function App() {
     return (
@@ -53,7 +53,7 @@ function App() {
                 </Suspense>
             </ToastProvider>
         </AuthProvider>
-    );
+    )
 }
 
-export default App;
+export default App

@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { RedirectIfLoggedIn } from "./RedirectIfLoggedIn";
-import { withMockAuth } from "../../mocks/decorators";
-import { users } from "../../mocks/fixtures";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { MemoryRouter, Route, Routes } from "react-router-dom"
+import { RedirectIfLoggedIn } from "./RedirectIfLoggedIn"
+import { withMockAuth } from "../../mocks/decorators"
+import { users } from "../../mocks/fixtures"
 
 // Same nested-layout-route shape as it's actually used in App.tsx (wrapping /login, /signup).
 const meta: Meta<typeof RedirectIfLoggedIn> = {
     component: RedirectIfLoggedIn,
     parameters: { layout: "fullscreen" },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof RedirectIfLoggedIn>;
+type Story = StoryObj<typeof RedirectIfLoggedIn>
 
 export const LoggedOut: Story = {
     decorators: [withMockAuth(null)],
@@ -27,7 +27,7 @@ export const LoggedOut: Story = {
             </Routes>
         </MemoryRouter>
     ),
-};
+}
 
 export const LoggedIn: Story = {
     decorators: [withMockAuth(users[0])],
@@ -51,4 +51,4 @@ export const LoggedIn: Story = {
             </Routes>
         </MemoryRouter>
     ),
-};
+}

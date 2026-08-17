@@ -1,9 +1,9 @@
-import { createContext } from "react";
+import { createContext } from "react"
 
-export type ToastVariant = "success" | "error";
+export type ToastVariant = "success" | "error"
 
 export interface ToastContextValue {
-    addToast: (variant: ToastVariant, message: string) => void;
+    addToast: (variant: ToastVariant, message: string) => void
 }
 
-export const ToastContext = createContext<ToastContextValue | null>(null);
+export const ToastContext = createContext<ToastContextValue | null>(null)

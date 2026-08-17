@@ -1,13 +1,13 @@
-import pino from "pino";
+import pino from "pino"
 
-const environment = process.env.NODE_ENV || "development";
+const environment = process.env.NODE_ENV || "development"
 
 function resolveLevel(): string {
     if (process.env.LOG_LEVEL) {
-        return process.env.LOG_LEVEL;
+        return process.env.LOG_LEVEL
     }
 
-    return environment === "test" ? "silent" : "info";
+    return environment === "test" ? "silent" : "info"
 }
 
 export const logger = pino({
@@ -20,6 +20,11 @@ export const logger = pino({
     // Pretty, colorized output is a dev convenience only — production emits
     // raw JSON to stdout for the platform/log aggregator to capture and parse.
     ...(environment === "development"
-        ? { transport: { target: "pino-pretty", options: { colorize: true, translateTime: "SYS:standard" } } }
+        ? {
+              transport: {
+                  target: "pino-pretty",
+                  options: { colorize: true, translateTime: "SYS:standard" },
+              },
+          }
         : {}),
-});
+})

@@ -1,18 +1,18 @@
-import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
-import { AuthLayout } from "./auth/AuthLayout";
-import { useLogin } from "../hooks/useLogin";
+import { useState, type FormEvent } from "react"
+import { Link } from "react-router-dom"
+import { AuthLayout } from "./auth/AuthLayout"
+import { useLogin } from "../hooks/useLogin"
 
 export function LoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const { login, isSubmitting, error } = useLogin();
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const { login, isSubmitting, error } = useLogin()
 
     const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
+        event.preventDefault()
         // triggers navigation via App.tsx react-router on success
-        login(email, password);
-    };
+        login(email, password)
+    }
 
     return (
         <AuthLayout
@@ -53,5 +53,5 @@ export function LoginPage() {
                 </p>
             </form>
         </AuthLayout>
-    );
+    )
 }

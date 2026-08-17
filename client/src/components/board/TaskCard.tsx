@@ -1,14 +1,14 @@
-import type { Task } from "../../types/task";
-import { Avatar } from "../ui/Avatar";
-import { LabelBadge } from "../ui/LabelBadge";
-import "./TaskCard.css";
+import type { Task } from "../../types/task"
+import { Avatar } from "../ui/Avatar"
+import { LabelBadge } from "../ui/LabelBadge"
+import "./TaskCard.css"
 
 interface TaskCardProps {
-    task: Task;
-    assigneeName?: string;
-    onOpen: () => void;
-    onOpenLabelPicker: () => void;
-    onRemoveLabel: (labelId: number) => void;
+    task: Task
+    assigneeName?: string
+    onOpen: () => void
+    onOpenLabelPicker: () => void
+    onRemoveLabel: (labelId: number) => void
 }
 
 export function TaskCard({
@@ -47,5 +47,5 @@ export function TaskCard({
                 <span className="task-card__assignee-name">{assigneeName}</span>
             </div>
         </div>
-    );
+    )
 }

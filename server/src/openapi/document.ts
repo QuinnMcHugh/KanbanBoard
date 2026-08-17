@@ -1,15 +1,15 @@
-import { OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
-import { registry } from "./registry";
+import { OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi"
+import { registry } from "./registry"
 
-import "./healthPaths";
-import "./authPaths";
-import "./projectPaths";
-import "./labelPaths";
-import "./taskPaths";
-import "./userPaths";
+import "./healthPaths"
+import "./authPaths"
+import "./projectPaths"
+import "./labelPaths"
+import "./taskPaths"
+import "./userPaths"
 
 export function generateOpenApiDocument() {
-    const generator = new OpenApiGeneratorV31(registry.definitions);
+    const generator = new OpenApiGeneratorV31(registry.definitions)
 
     return generator.generateDocument({
         openapi: "3.1.0",
@@ -20,5 +20,5 @@ export function generateOpenApiDocument() {
                 "REST API for a tenant-wide Kanban board — any authenticated user can read/edit/delete any project, task, or label. Auth is via a JWT bearer token returned from signup/login.",
         },
         servers: [{ url: "/", description: "Current server" }],
-    });
+    })
 }

@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
-import { Board } from "./Board";
-import { tasks, users } from "../../mocks/fixtures";
-import { withMockUsers } from "../../mocks/decorators";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { fn } from "storybook/test"
+import { Board } from "./Board"
+import { tasks, users } from "../../mocks/fixtures"
+import { withMockUsers } from "../../mocks/decorators"
 
 const meta: Meta<typeof Board> = {
     component: Board,
@@ -16,9 +16,9 @@ const meta: Meta<typeof Board> = {
         onAddTask: fn(),
         onMoveTask: fn(),
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof Board>;
+type Story = StoryObj<typeof Board>
 
-export const Default: Story = {};
+export const Default: Story = {}

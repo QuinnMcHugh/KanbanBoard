@@ -1,5 +1,5 @@
-import type { Knex } from "knex";
-import type { Database } from "sqlite3";
+import type { Knex } from "knex"
+import type { Database } from "sqlite3"
 
 const sharedConfig: Omit<Knex.Config, "connection"> = {
     // Tell Knex we are using SQLite
@@ -17,7 +17,7 @@ const sharedConfig: Omit<Knex.Config, "connection"> = {
             conn: Database,
             done: (err: Error | null, conn?: Database) => void,
         ) => {
-            conn.run("PRAGMA foreign_keys = ON", done);
+            conn.run("PRAGMA foreign_keys = ON", done)
         },
     },
 
@@ -29,23 +29,23 @@ const sharedConfig: Omit<Knex.Config, "connection"> = {
     seeds: {
         directory: "./src/db/seeds",
         extension: "ts",
-    }
-};
+    },
+}
 
 const config: Record<string, Knex.Config> = {
     development: {
         ...sharedConfig,
         connection: {
-            filename: "./src/db/kanban.sqlite3"
+            filename: "./src/db/kanban.sqlite3",
         },
     },
 
     test: {
         ...sharedConfig,
         connection: {
-            filename: "./src/db/kanban.test.sqlite3"
+            filename: "./src/db/kanban.test.sqlite3",
         },
     },
-};
+}
 
-export default config;
+export default config

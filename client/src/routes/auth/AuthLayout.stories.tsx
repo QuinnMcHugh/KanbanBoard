@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { AuthLayout } from "./AuthLayout";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { AuthLayout } from "./AuthLayout"
 
 const meta: Meta<typeof AuthLayout> = {
     component: AuthLayout,
@@ -18,9 +18,9 @@ const meta: Meta<typeof AuthLayout> = {
             </p>
         ),
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof AuthLayout>;
+type Story = StoryObj<typeof AuthLayout>
 
-export const Default: Story = {};
+export const Default: Story = {}

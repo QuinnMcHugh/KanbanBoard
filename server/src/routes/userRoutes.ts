@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { getUsers } from "../controllers/userController";
-import { authenticateToken } from "../middleware/auth";
+import { Router } from "express"
+import { getUsers } from "../controllers/userController"
+import { authenticateToken } from "../middleware/auth"
 
-const router = Router();
+const router = Router()
 
 // Protected Routes (Token required)
-router.get("/", authenticateToken, getUsers);
+router.get("/", authenticateToken, getUsers)
 
-export default router;
+export default router

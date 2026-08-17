@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
-import { DraggableTaskCard } from "./DraggableTaskCard";
-import { tasks } from "../../mocks/fixtures";
-import { withDndContext } from "../../mocks/withDndContext";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { fn } from "storybook/test"
+import { DraggableTaskCard } from "./DraggableTaskCard"
+import { tasks } from "../../mocks/fixtures"
+import { withDndContext } from "../../mocks/withDndContext"
 
 const meta: Meta<typeof DraggableTaskCard> = {
     component: DraggableTaskCard,
@@ -14,9 +14,9 @@ const meta: Meta<typeof DraggableTaskCard> = {
         onOpenLabelPicker: fn(),
         onRemoveLabel: fn(),
     },
-};
-export default meta;
+}
+export default meta
 
-type Story = StoryObj<typeof DraggableTaskCard>;
+type Story = StoryObj<typeof DraggableTaskCard>
 
-export const Default: Story = {};
+export const Default: Story = {}

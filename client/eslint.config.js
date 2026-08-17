@@ -1,18 +1,20 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
+import storybook from "eslint-plugin-storybook"
 
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
-import eslintConfigPrettier from "eslint-config-prettier";
+import js from "@eslint/js"
+import globals from "globals"
+import reactHooks from "eslint-plugin-react-hooks"
+import reactRefresh from "eslint-plugin-react-refresh"
+import jsxA11y from "eslint-plugin-jsx-a11y"
+import tseslint from "typescript-eslint"
+import eslintConfigPrettier from "eslint-config-prettier"
 
 export default tseslint.config(
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     reactHooks.configs.flat["recommended-latest"],
     reactRefresh.configs.vite,
+    jsxA11y.flatConfigs.recommended,
     // Disables any ESLint stylistic rules that could conflict with Prettier.
     // Indentation itself isn't an ESLint rule at all anymore (see below) — this
     // guards against other formatting rules (quotes, semicolons, etc.) if any
@@ -46,5 +48,5 @@ export default tseslint.config(
     {
         ignores: ["dist/**", "node_modules/**"],
     },
-    storybook.configs["flat/recommended"]
-);
+    storybook.configs["flat/recommended"],
+)

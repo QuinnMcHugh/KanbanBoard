@@ -104,7 +104,7 @@ Kanban Plan
 - Begin the frontend ✅
 - Set up UI project scaffolding ✅
 - Use Vite, React, native css, Radix UI ✅
-- Implement auth flow ⚡️
+- Implement auth flow ✅
   - When unauth'd, show login page ✅
     - Show login validation failures ✅
   - When auth'd (where do we store that jwt?), land on dashboard page ✅
@@ -128,17 +128,14 @@ Kanban Plan
 - test app manually and look for bugs / obvious improvements ✅
 
 - Add storybook views ✅
-- Add a top-level error boundary ⚡️
-- Implement some rudimentary code splitting ⚡️
- - No code splitting — single ~420KB JS bundle (132KB gzip), no React.lazy(), no manualChunks. Not urgent at this size, but the standard next lever (e.g., the dnd-kit/board bundle doesn't need to load for someone sitting on /login).
- - automated a11y checks: @storybook/addon-a11y 
-- Add eslint to UI project
+- Add a top-level error boundary ✅
+- Implement some rudimentary code splitting ✅
+- Add eslint to UI project ⚡️
  - and plugins: eslint-plugin-react-hooks, eslint-plugin-jsx-a11y 
 - Add vitest tests
  - RTL for component tests
  - Playwright for e2e tests 
 
-- Create storybook React components and combined views
 - Ask AI to stress test the app and look for production-readiness
 
 
@@ -151,5 +148,3 @@ Kanban Plan
 - Create a nice README for the overall project and explain it's purpose, how to run it, and what I learned from it 
 
 
-Notes
-- Have AI review my work after each stage for tips and industry standard guidance

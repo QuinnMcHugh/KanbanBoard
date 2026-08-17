@@ -1,4 +1,4 @@
-import type { Label } from "./label";
+import type { Label } from "./label"
 
 export const TASK_STATUSES = [
     "to_do",
@@ -6,18 +6,18 @@ export const TASK_STATUSES = [
     "in_review",
     "blocked",
     "done",
-] as const;
+] as const
 
-export type TaskStatus = (typeof TASK_STATUSES)[number];
+export type TaskStatus = (typeof TASK_STATUSES)[number]
 
 export interface Task {
-    id: number;
-    name: string;
-    description: string;
-    status: TaskStatus;
-    project_id: number;
-    assigned_to_user_id: number | null;
-    created_at: string;
-    updated_at: string;
-    labels: Label[];
+    id: number
+    name: string
+    description: string
+    status: TaskStatus
+    project_id: number
+    assigned_to_user_id: number | null
+    created_at: string
+    updated_at: string
+    labels: Label[]
 }

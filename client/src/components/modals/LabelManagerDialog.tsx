@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Checkbox, Dialog } from "radix-ui";
-import type { Label } from "../../types/label";
-import "./LabelManagerDialog.css";
+import { useState } from "react"
+import { Checkbox, Dialog } from "radix-ui"
+import type { Label } from "../../types/label"
+import "./LabelManagerDialog.css"
 
 const SWATCH_COLORS = [
     "#ef4444",
@@ -12,22 +12,22 @@ const SWATCH_COLORS = [
     "#3b82f6",
     "#8b5cf6",
     "#ec4899",
-];
+]
 
 function sameLabelIds(a: number[], b: number[]): boolean {
-    if (a.length !== b.length) return false;
-    const setB = new Set(b);
-    return a.every((id) => setB.has(id));
+    if (a.length !== b.length) return false
+    const setB = new Set(b)
+    return a.every((id) => setB.has(id))
 }
 
 interface LabelManagerDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    labels: Label[];
-    checkedLabelIds: number[];
-    onSave: (labelIds: number[]) => void;
-    onDeleteLabel: (labelId: number) => void;
-    onCreateLabel: (name: string, color: string) => void;
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    labels: Label[]
+    checkedLabelIds: number[]
+    onSave: (labelIds: number[]) => void
+    onDeleteLabel: (labelId: number) => void
+    onCreateLabel: (name: string, color: string) => void
 }
 
 export function LabelManagerDialog({
@@ -39,37 +39,37 @@ export function LabelManagerDialog({
     onDeleteLabel,
     onCreateLabel,
 }: LabelManagerDialogProps) {
-    const [newName, setNewName] = useState("");
-    const [selectedColor, setSelectedColor] = useState(SWATCH_COLORS[0]);
-    const [checkedIds, setCheckedIds] = useState<number[]>(checkedLabelIds);
+    const [newName, setNewName] = useState("")
+    const [selectedColor, setSelectedColor] = useState(SWATCH_COLORS[0])
+    const [checkedIds, setCheckedIds] = useState<number[]>(checkedLabelIds)
 
     const handleAdd = () => {
-        const name = newName.trim();
-        if (!name) return;
-        onCreateLabel(name, selectedColor);
-        setNewName("");
-    };
+        const name = newName.trim()
+        if (!name) return
+        onCreateLabel(name, selectedColor)
+        setNewName("")
+    }
 
     const handleToggleCheckbox = (labelId: number) => {
         setCheckedIds((prev) =>
             prev.includes(labelId)
                 ? prev.filter((id) => id !== labelId)
                 : [...prev, labelId],
-        );
-    };
+        )
+    }
 
     const handleOpenChange = (next: boolean) => {
         if (!next) {
             // Drop any ids for labels deleted globally while this modal was open.
             const validIds = checkedIds.filter((id) =>
                 labels.some((label) => label.id === id),
-            );
+            )
             if (!sameLabelIds(validIds, checkedLabelIds)) {
-                onSave(validIds);
+                onSave(validIds)
             }
         }
-        onOpenChange(next);
-    };
+        onOpenChange(next)
+    }
 
     return (
         <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -170,5 +170,5 @@ export function LabelManagerDialog({
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
-    );
+    )
 }

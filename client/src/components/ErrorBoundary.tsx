@@ -1,22 +1,22 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
-import "./ErrorBoundary.css";
+import { Component, type ErrorInfo, type ReactNode } from "react"
+import "./ErrorBoundary.css"
 
 interface ErrorBoundaryProps {
-    children: ReactNode;
+    children: ReactNode
 }
 
 interface ErrorBoundaryState {
-    hasError: boolean;
+    hasError: boolean
 }
 
 export class ErrorBoundary extends Component<
     ErrorBoundaryProps,
     ErrorBoundaryState
 > {
-    state: ErrorBoundaryState = { hasError: false };
+    state: ErrorBoundaryState = { hasError: false }
 
     static getDerivedStateFromError(): ErrorBoundaryState {
-        return { hasError: true };
+        return { hasError: true }
     }
 
     componentDidCatch(error: Error, info: ErrorInfo) {
@@ -24,12 +24,12 @@ export class ErrorBoundary extends Component<
             "Uncaught error in component tree:",
             error,
             info.componentStack,
-        );
+        )
     }
 
     handleReload = () => {
-        window.location.reload();
-    };
+        window.location.reload()
+    }
 
     render() {
         if (this.state.hasError) {
@@ -53,9 +53,9 @@ export class ErrorBoundary extends Component<
                         </button>
                     </div>
                 </div>
-            );
+            )
         }
 
-        return this.props.children;
+        return this.props.children
     }
 }
