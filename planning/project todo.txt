@@ -138,8 +138,9 @@ Kanban Plan
 
 
 
-- Create prod knex config - close other prod-readiness gaps ⚡️
-- Deploy to Render and test in prod
+- Create prod knex config - close other prod-readiness gaps ✅
+- Deploy to Render and test in prod ✅
  - figure out how to do this with a node server and a frontend
-- Write a post about this on my personal site
+- Write a post about this for my personal site ⚡️
 - Create a nice README for the overall project and explain it's purpose, how to run it, and what I learned from it 
+- publish to personal site
