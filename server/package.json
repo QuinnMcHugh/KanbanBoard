@@ -10,7 +10,7 @@
         "build": "npm run typecheck",
         "start": "tsx src/server.ts",
         "start:prod": "knex migrate:latest --knexfile knexfile.ts && knex seed:run --knexfile knexfile.ts && npm run start",
-        "build:prod": "npm install --include=dev && npm run build && npm prune --omit=dev",
+        "build:prod": "npm_config_build_from_source=true npm install --include=dev && npm run build && npm prune --omit=dev",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "typecheck": "tsc --noEmit",
